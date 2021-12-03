@@ -1,11 +1,14 @@
 package com.haiying.yeji.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -41,9 +44,9 @@ public class SysPermission implements Serializable {
     private String buttonType;
 
     /**
-     * 按钮位置,工具条按钮，操作按钮
+     * 按钮位置,工具条，操作
      */
-    private String position;
+    private String buttonPosition;
 
     /**
      * 名称
@@ -70,5 +73,7 @@ public class SysPermission implements Serializable {
      */
     private String remark;
 
+    @TableField(exist = false)
+    private List<SysPermission> children;
 
 }

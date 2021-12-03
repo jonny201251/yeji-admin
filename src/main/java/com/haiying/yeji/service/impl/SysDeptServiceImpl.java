@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-12-01
  */
 @Service
-public class SysDeptServiceImp extends ServiceImpl<SysDeptMapper, SysDept> implements SysDeptService {
+public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements SysDeptService {
 
 }

@@ -2,6 +2,7 @@ package com.haiying.yeji.controller;
 
 
 import com.haiying.yeji.common.result.ResponseResultWrapper;
+import com.haiying.yeji.model.entity.SysPermission;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sysPermission")
 @ResponseResultWrapper
-public class SysPermissionController {
+public class SysPermissionController extends BaseTreeController<SysPermission> {
 
 }

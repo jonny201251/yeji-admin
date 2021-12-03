@@ -36,7 +36,7 @@ public class CodeGenerator {
                             .formatFileName("%sController");
                     builder.serviceBuilder()
                             .formatServiceFileName("%sService")
-                            .formatServiceImplFileName("%sServiceImp");
+                            .formatServiceImplFileName("%sServiceImpl");
                     builder.mapperBuilder()
                             .enableMapperAnnotation()
                             .formatMapperFileName("%sMapper")

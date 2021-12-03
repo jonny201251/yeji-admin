@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-11-17
  */
 @Service
-public class SysDicServiceImp extends ServiceImpl<SysDicMapper, SysDic> implements SysDicService {
+public class SysDicServiceImpl extends ServiceImpl<SysDicMapper, SysDic> implements SysDicService {
 
 }

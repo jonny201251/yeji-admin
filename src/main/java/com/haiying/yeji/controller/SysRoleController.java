@@ -2,6 +2,7 @@ package com.haiying.yeji.controller;
 
 
 import com.haiying.yeji.common.result.ResponseResultWrapper;
+import com.haiying.yeji.model.entity.SysRole;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sysRole")
 @ResponseResultWrapper
-public class SysRoleController {
+public class SysRoleController extends BaseController<SysRole> {
 
 }

@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-11-17
  */
 @Service
-public class SysCountServiceImp extends ServiceImpl<SysCountMapper, SysCount> implements SysCountService {
+public class SysCountServiceImpl extends ServiceImpl<SysCountMapper, SysCount> implements SysCountService {
 
 }
