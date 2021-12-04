@@ -1,10 +1,15 @@
 package com.haiying.yeji.service.impl;
 
-import com.haiying.yeji.model.entity.LeadDept;
-import com.haiying.yeji.mapper.LeadDeptMapper;
-import com.haiying.yeji.service.LeadDeptService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.haiying.yeji.mapper.LeadDeptMapper;
+import com.haiying.yeji.model.entity.LeadDept;
+import com.haiying.yeji.model.vo.LeadDeptVO;
+import com.haiying.yeji.service.LeadDeptService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +21,23 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> implements LeadDeptService {
+    @Autowired
+    LeadDeptService leadDeptService;
 
+    @Override
+    public boolean add(LeadDeptVO leadDeptVO) {
+
+        return true;
+    }
+
+    @Override
+    public boolean edit(LeadDeptVO leadDeptVO) {
+        return true;
+    }
+
+    @Override
+    public boolean delete(List<String> userNameList) {
+        this.remove(new LambdaQueryWrapper<LeadDept>().in(LeadDept::getUserName,userNameList));
+        return true;
+    }
 }

@@ -54,8 +54,8 @@ public class SysDeptController {
     }
 
     @GetMapping("delete")
-    public boolean delete(Integer[] idArr) {
-        List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
+    public boolean delete(Integer[] arr) {
+        List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
         //根据idList，取出所有的子节点
         List<Integer> list = new ArrayList<>(idList);
         while (true) {

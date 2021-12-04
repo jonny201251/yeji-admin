@@ -27,9 +27,11 @@ public class CheckUser implements Serializable {
     private Integer id;
 
     /**
-     * 登录名称
+     * 登录姓名
      */
     private String name;
+
+    private String password;
 
     /**
      * 性别

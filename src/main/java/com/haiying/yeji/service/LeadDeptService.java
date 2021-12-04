@@ -1,7 +1,10 @@
 package com.haiying.yeji.service;
 
-import com.haiying.yeji.model.entity.LeadDept;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.haiying.yeji.model.entity.LeadDept;
+import com.haiying.yeji.model.vo.LeadDeptVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-12-04
  */
 public interface LeadDeptService extends IService<LeadDept> {
-
+    boolean add(LeadDeptVO leadDeptVO);
+    boolean edit(LeadDeptVO leadDeptVO);
+    boolean delete(List<String> userNameList);
 }

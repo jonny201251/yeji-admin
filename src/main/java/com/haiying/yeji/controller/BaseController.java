@@ -52,8 +52,8 @@ public class BaseController<T> {
     }
 
     @GetMapping("delete")
-    public boolean delete(Integer[] idArr) {
-        List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
+    public boolean delete(Integer[] arr) {
+        List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
         return service.removeByIds(idList);
     }
 }
