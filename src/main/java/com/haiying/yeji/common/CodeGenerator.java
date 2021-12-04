@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class CodeGenerator {
     //表名称
-    private static String[] includeArr = {"sys_dept", "sys_user", "sys_role", "sys_permission", "sys_role_permission", "sys_role_user"};
+    private static String[] includeArr = {};
 
     public static void main(String[] args) {
         String projectPath = System.getProperty("user.dir");
