@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,7 +28,7 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/sysDept")
 @ResponseResultWrapper
-public class SysDeptController{
+public class SysDeptController {
     @Autowired
     private SysDeptService sysDeptService;
 
@@ -75,4 +76,9 @@ public class SysDeptController{
         return TreeUtil.getTreeSelect(list);
     }
 
+    @GetMapping("getIdNameMap")
+    public Map<Integer, String> getIdNameMap() {
+        List<SysDept> list = sysDeptService.list();
+       return list.stream().collect(Collectors.toMap(SysDept::getId, SysDept::getName));
+    }
 }

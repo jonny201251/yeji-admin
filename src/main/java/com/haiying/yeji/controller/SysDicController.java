@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.SysDic;
+import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.service.SysDicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +55,12 @@ public class SysDicController {
     public boolean delete(Integer[] idArr) {
         List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
         return sysDicService.removeByIds(idList);
+    }
+
+    @GetMapping("getLabelValue")
+    public List<LabelValue> getLabelValue(String flag) {
+        List<SysDic> list = sysDicService.list(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag,flag));
+        return list.stream().map(item -> new LabelValue(item.getName(), item.getName())).collect(Collectors.toList());
     }
 
 }
