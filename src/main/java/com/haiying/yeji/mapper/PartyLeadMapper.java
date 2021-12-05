@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-05
  */
 @Mapper
 public interface PartyLeadMapper extends BaseMapper<PartyLead> {

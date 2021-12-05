@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-05
  */
 public interface PartyLead2Service extends IService<PartyLead2> {
 

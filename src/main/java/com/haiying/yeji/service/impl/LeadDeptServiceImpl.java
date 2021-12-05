@@ -38,7 +38,7 @@ public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> i
     @Override
     public boolean add(LeadDeptVO leadDeptVO) {
         if (ObjectUtil.isEmpty(leadDeptVO.getDeptIdList())) {
-            throw new PageTipException("需要选择主管的部门");
+            throw new PageTipException("没有选择部门");
         }
         //判断是否已存在
         List<LeadDept> dbList = this.list(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName, leadDeptVO.getUserName()));
@@ -68,7 +68,7 @@ public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> i
 
     @Override
     public boolean edit(LeadDeptVO leadDeptVO) {
-        LeadDept leadDept=this.getOne(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName,leadDeptVO.getUserName()));
+        LeadDept leadDept = this.getOne(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName, leadDeptVO.getUserName()));
         //先删除
         this.remove(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName, leadDeptVO.getUserName()));
         leadDept2Service.remove(new LambdaQueryWrapper<LeadDept2>().eq(LeadDept2::getLeadDeptId, leadDept.getId()));

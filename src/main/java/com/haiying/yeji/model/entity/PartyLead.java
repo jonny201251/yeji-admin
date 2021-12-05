@@ -13,7 +13,7 @@ import lombok.Setter;
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-05
  */
 @Getter
 @Setter
@@ -22,10 +22,12 @@ public class PartyLead implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
     /**
      * 登录名称
      */
-    @TableId(value = "user_name", type = IdType.AUTO)
     private String userName;
 
 

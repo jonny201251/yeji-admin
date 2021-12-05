@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-05
  */
 @Service
 public class PartyLead2ServiceImpl extends ServiceImpl<PartyLead2Mapper, PartyLead2> implements PartyLead2Service {

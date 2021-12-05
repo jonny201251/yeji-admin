@@ -65,5 +65,4 @@ public class LeadDeptController {
         List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
         return leadDeptService.delete(idList);
     }
-
 }
