@@ -17,5 +17,5 @@ import java.util.List;
 public interface LeadDeptService extends IService<LeadDept> {
     boolean add(LeadDeptVO leadDeptVO);
     boolean edit(LeadDeptVO leadDeptVO);
-    boolean delete(List<String> userNameList);
+    boolean delete(List<Integer> idList);
 }

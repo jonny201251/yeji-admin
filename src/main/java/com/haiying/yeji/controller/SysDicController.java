@@ -52,8 +52,8 @@ public class SysDicController {
     }
 
     @GetMapping("delete")
-    public boolean delete(Integer[] arr) {
-        List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
+    public boolean delete(Integer[] idArr) {
+        List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
         return sysDicService.removeByIds(idList);
     }
 

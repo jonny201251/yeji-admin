@@ -40,6 +40,12 @@ public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> i
         if (ObjectUtil.isEmpty(leadDeptVO.getDeptIdList())) {
             throw new PageTipException("需要选择主管的部门");
         }
+        //判断是否已存在
+        List<LeadDept> dbList = this.list(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName, leadDeptVO.getUserName()));
+        if (ObjectUtil.isNotEmpty(dbList)) {
+            throw new PageTipException("姓名已存在");
+        }
+        //
         CheckUser user = checkUserService.getOne(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getName, leadDeptVO.getUserName()));
 
         LeadDept leadDept = new LeadDept();
@@ -48,10 +54,10 @@ public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> i
         this.save(leadDept);
 
         List<LeadDept2> leadDept2List = new ArrayList<>();
-        Set<Integer> set=new TreeSet<>(leadDeptVO.getDeptIdList());
+        Set<Integer> set = new TreeSet<>(leadDeptVO.getDeptIdList());
         set.forEach(deptId -> {
             LeadDept2 leadDept2 = new LeadDept2();
-            leadDept2.setUserName(leadDeptVO.getUserName());
+            leadDept2.setLeadDeptId(leadDept.getId());
             leadDept2.setDeptId(deptId);
             leadDept2List.add(leadDept2);
         });
@@ -62,12 +68,18 @@ public class LeadDeptServiceImpl extends ServiceImpl<LeadDeptMapper, LeadDept> i
 
     @Override
     public boolean edit(LeadDeptVO leadDeptVO) {
-        return true;
+        LeadDept leadDept=this.getOne(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName,leadDeptVO.getUserName()));
+        //先删除
+        this.remove(new LambdaQueryWrapper<LeadDept>().eq(LeadDept::getUserName, leadDeptVO.getUserName()));
+        leadDept2Service.remove(new LambdaQueryWrapper<LeadDept2>().eq(LeadDept2::getLeadDeptId, leadDept.getId()));
+        //后插入
+        return add(leadDeptVO);
     }
 
     @Override
-    public boolean delete(List<String> userNameList) {
-        this.remove(new LambdaQueryWrapper<LeadDept>().in(LeadDept::getUserName, userNameList));
+    public boolean delete(List<Integer> idList) {
+        this.removeByIds(idList);
+        leadDept2Service.remove(new LambdaQueryWrapper<LeadDept2>().in(LeadDept2::getLeadDeptId, idList));
         return true;
     }
 }

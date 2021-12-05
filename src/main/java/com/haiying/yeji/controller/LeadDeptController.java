@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.LeadDept;
+import com.haiying.yeji.model.entity.LeadDept2;
 import com.haiying.yeji.model.vo.LeadDeptVO;
 import com.haiying.yeji.service.LeadDept2Service;
 import com.haiying.yeji.service.LeadDeptService;
@@ -45,8 +46,13 @@ public class LeadDeptController {
     }
 
     @GetMapping("get")
-    public LeadDeptVO getById(String id) {
-        return null;
+    public LeadDeptVO getById(Integer id) {
+        LeadDept leadDept = leadDeptService.getById(id);
+        LeadDeptVO leadDeptVO = new LeadDeptVO();
+        leadDeptVO.setUserName(leadDept.getUserName());
+        List<LeadDept2> list = leadDept2Service.list(new LambdaQueryWrapper<LeadDept2>().eq(LeadDept2::getLeadDeptId, leadDept.getId()));
+        leadDeptVO.setDeptIdList(list.stream().map(LeadDept2::getDeptId).collect(Collectors.toList()));
+        return leadDeptVO;
     }
 
     @PostMapping("edit")
@@ -55,9 +61,9 @@ public class LeadDeptController {
     }
 
     @GetMapping("delete")
-    public boolean delete(String[] arr) {
-        List<String> userNameList = Stream.of(arr).collect(Collectors.toList());
-        return leadDeptService.delete(userNameList);
+    public boolean delete(Integer[] idArr) {
+        List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
+        return leadDeptService.delete(idList);
     }
 
 }
