@@ -76,9 +76,15 @@ public class SysDeptController {
         return TreeUtil.getTreeSelect(list);
     }
 
+    @GetMapping("getTreeSelect2")
+    public List<TreeSelect> getTreeSelect2() {
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().ne(SysDept::getPid, 0).orderByAsc(SysDept::getSort));
+        return TreeUtil.getTreeSelect(list);
+    }
+
     @GetMapping("getIdNameMap")
     public Map<Integer, String> getIdNameMap() {
         List<SysDept> list = sysDeptService.list();
-       return list.stream().collect(Collectors.toMap(SysDept::getId, SysDept::getName));
+        return list.stream().collect(Collectors.toMap(SysDept::getId, SysDept::getName));
     }
 }

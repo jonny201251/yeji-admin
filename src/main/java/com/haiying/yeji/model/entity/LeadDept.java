@@ -1,11 +1,10 @@
 package com.haiying.yeji.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -23,10 +22,11 @@ public class LeadDept implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 登录名称
+     * 登录姓名
      */
-    @TableId(value = "user_name", type = IdType.AUTO)
     private String userName;
-
-
+    /**
+     * 人员排序
+     */
+    private Double sort;
 }
