@@ -9,16 +9,16 @@ import lombok.Setter;
 
 /**
  * <p>
- * 评分部门人员的单向和双向设置
+ * 部门评分方向
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-08
  */
 @Getter
 @Setter
-@TableName("dept_user2")
-public class DeptUser2 implements Serializable {
+@TableName("dept_score_direction")
+public class DeptScoreDirection implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,17 +28,7 @@ public class DeptUser2 implements Serializable {
     /**
      * 评分方向,单向,双向
      */
-    private String scoreDirection;
-
-    /**
-     * 评分部门
-     */
-    private Integer scoreDeptId;
-
-    /**
-     * 被评分部门
-     */
-    private Integer scoreeDeptId;
+    private String direction;
 
 
 }
