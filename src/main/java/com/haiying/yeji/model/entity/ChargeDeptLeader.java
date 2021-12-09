@@ -9,7 +9,7 @@ import lombok.Setter;
 
 /**
  * <p>
- * 班组
+ * 主管部门领导
  * </p>
  *
  * @author 作者
@@ -17,8 +17,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("dept_group")
-public class DeptGroup implements Serializable {
+@TableName("charge_dept_leader")
+public class ChargeDeptLeader implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,19 +26,14 @@ public class DeptGroup implements Serializable {
     private Integer id;
 
     /**
+     * 姓名
+     */
+    private String userName;
+
+    /**
      * 部门id
      */
     private Integer deptId;
-
-    /**
-     * 班组名称
-     */
-    private String name;
-
-    /**
-     * 备注
-     */
-    private String remark;
 
 
 }

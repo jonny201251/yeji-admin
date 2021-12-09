@@ -3,22 +3,23 @@ package com.haiying.yeji.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * <p>
- * 班组
+ * 部门评分关系
  * </p>
  *
  * @author 作者
- * @since 2021-12-09
+ * @since 2021-12-08
  */
 @Getter
 @Setter
-@TableName("dept_group")
-public class DeptGroup implements Serializable {
+@TableName("dept_score_relation")
+public class DeptScoreRelation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,19 +27,13 @@ public class DeptGroup implements Serializable {
     private Integer id;
 
     /**
-     * 部门id
+     * 评分部门id
      */
-    private Integer deptId;
-
+    private Integer scoreDeptId;
     /**
-     * 班组名称
+     * 被评分部门
      */
-    private String name;
-
-    /**
-     * 备注
-     */
-    private String remark;
+    private Integer scoreeDeptId;
 
 
 }

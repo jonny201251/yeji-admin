@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 部门班组设置 服务实现类
+ * 班组 服务实现类
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-09
  */
 @Service
 public class DeptGroupServiceImpl extends ServiceImpl<DeptGroupMapper, DeptGroup> implements DeptGroupService {

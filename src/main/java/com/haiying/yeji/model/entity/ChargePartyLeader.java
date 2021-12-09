@@ -3,13 +3,14 @@ package com.haiying.yeji.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * <p>
- * 班组
+ * 主管党支部领导
  * </p>
  *
  * @author 作者
@@ -17,8 +18,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("dept_group")
-public class DeptGroup implements Serializable {
+@TableName("charge_party_leader")
+public class ChargePartyLeader implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,19 +27,14 @@ public class DeptGroup implements Serializable {
     private Integer id;
 
     /**
-     * 部门id
+     * 姓名
      */
-    private Integer deptId;
+    private String userName;
 
     /**
-     * 班组名称
+     * 党支部名称
      */
-    private String name;
-
-    /**
-     * 备注
-     */
-    private String remark;
+    private String partyName;
 
 
 }

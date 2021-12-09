@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class CodeGenerator {
     //表名称
-    private static String[] includeArr = {"dept_score_direction","dept_score_direction2"};
+    private static String[] includeArr = {"charge_dept_leader","charge_party_leader"};
 
     public static void main(String[] args) {
         String projectPath = System.getProperty("user.dir");

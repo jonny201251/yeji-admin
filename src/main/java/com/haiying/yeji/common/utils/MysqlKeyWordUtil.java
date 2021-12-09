@@ -20,6 +20,6 @@ public class MysqlKeyWordUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(check("id,year,name,status,start_date,end_date,remark,check"));
+        System.out.println(check("party"));
     }
 }
