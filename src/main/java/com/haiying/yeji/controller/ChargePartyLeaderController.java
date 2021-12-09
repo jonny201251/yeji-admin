@@ -43,7 +43,7 @@ public class ChargePartyLeaderController {
         List<ChargePartyLeader> list = new ArrayList<>();
         for (String partyName : chargePartyLeaderVO.getPartyNameList()) {
             ChargePartyLeader chargePartyLeader = new ChargePartyLeader();
-            chargePartyLeader.setUserName(chargePartyLeader.getUserName());
+            chargePartyLeader.setUserName(chargePartyLeaderVO.getUserName());
             chargePartyLeader.setPartyName(partyName);
             list.add(chargePartyLeader);
         }
