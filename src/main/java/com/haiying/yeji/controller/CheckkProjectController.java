@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- * 被考核的人员角色的设置 前端控制器
+ * 被考核的项目 前端控制器
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-09
  */
 @RestController
-@RequestMapping("/checkk-role")
-public class CheckkRoleController {
+@RequestMapping("/checkk-project")
+public class CheckkProjectController {
 
 }
