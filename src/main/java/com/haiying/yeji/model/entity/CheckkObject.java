@@ -32,6 +32,11 @@ public class CheckkObject implements Serializable {
     private String checkkObject;
 
     /**
+     * 排序
+     */
+    private Double sort;
+
+    /**
      * 考核人员类型
      */
     private String checkUserType;

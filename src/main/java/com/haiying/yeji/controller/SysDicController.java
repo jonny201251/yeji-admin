@@ -1,6 +1,7 @@
 package com.haiying.yeji.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,8 +32,15 @@ public class SysDicController {
     SysDicService sysDicService;
 
     @GetMapping("list")
-    public IPage<SysDic> list(int current, int pageSize) {
+    public IPage<SysDic> list(int current, int pageSize, String flag, String name) {
         LambdaQueryWrapper<SysDic> wrapper = new LambdaQueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(flag)) {
+            wrapper.like(SysDic::getFlag, flag);
+        }
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(SysDic::getName, name);
+        }
+        wrapper.orderByAsc(SysDic::getSort);
         return sysDicService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -59,7 +67,7 @@ public class SysDicController {
 
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue(String flag) {
-        List<SysDic> list = sysDicService.list(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag,flag));
+        List<SysDic> list = sysDicService.list(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag, flag).orderByAsc(SysDic::getSort));
         return list.stream().map(item -> new LabelValue(item.getName(), item.getName())).collect(Collectors.toList());
     }
 

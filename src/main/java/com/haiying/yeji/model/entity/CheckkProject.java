@@ -27,14 +27,19 @@ public class CheckkProject implements Serializable {
     private Integer id;
 
     /**
-     * 被考核类别
+     * 被考核对象
      */
-    private String checkkType;
+    private String checkkObject;
+
+    /**
+     * 排序
+     */
+    private Double sort;
 
     /**
      * 考核项目
      */
-    private String checkProject;
+    private String projectName;
 
     /**
      * 权重

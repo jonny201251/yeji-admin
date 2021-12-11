@@ -42,7 +42,7 @@ public class BaseController<T> {
     }
 
     @GetMapping("get")
-    public T getById(String id) {
+    public T getById(Integer id) {
         return service.getById(id);
     }
 

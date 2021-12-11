@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class CheckkProjectVO {
-    private String checkkType;
+    private String checkkObject;
+    private String oldCheckkObject;
     private List<CheckkProject> checkList;
 }
