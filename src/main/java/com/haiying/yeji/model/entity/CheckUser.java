@@ -10,11 +10,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 考核人员信息设置
+ * 考核人员信息
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-12
  */
 @Getter
 @Setter
@@ -31,6 +31,9 @@ public class CheckUser implements Serializable {
      */
     private String name;
 
+    /**
+     * 登录密码
+     */
     private String password;
 
     /**
@@ -59,6 +62,16 @@ public class CheckUser implements Serializable {
     private Integer deptId;
 
     /**
+     * 部门名称
+     */
+    private String deptName;
+
+    /**
+     * 部门排序
+     */
+    private Double deptSort;
+
+    /**
      * 人员角色
      */
     private String userRole;
@@ -81,7 +94,7 @@ public class CheckUser implements Serializable {
     /**
      * 人员排序
      */
-    private Double sort;
+    private Double userSort;
 
     /**
      * 备注

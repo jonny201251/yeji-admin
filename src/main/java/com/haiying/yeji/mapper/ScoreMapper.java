@@ -1,6 +1,6 @@
 package com.haiying.yeji.mapper;
 
-import com.haiying.yeji.model.entity.CheckScore;
+import com.haiying.yeji.model.entity.Score;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 作者
- * @since 2021-12-11
+ * @since 2021-12-12
  */
 @Mapper
-public interface CheckScoreMapper extends BaseMapper<CheckScore> {
+public interface ScoreMapper extends BaseMapper<Score> {
 
 }

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author 作者
- * @since 2021-12-09
+ * @since 2021-12-12
  */
 public interface ChargeDeptLeaderService extends IService<ChargeDeptLeader> {
 

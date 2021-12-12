@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 作者
- * @since 2021-12-09
+ * @since 2021-12-12
  */
 @Mapper
 public interface ChargeDeptLeaderMapper extends BaseMapper<ChargeDeptLeader> {

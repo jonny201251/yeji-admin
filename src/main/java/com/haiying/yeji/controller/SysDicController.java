@@ -68,6 +68,7 @@ public class SysDicController {
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue(String flag) {
         List<SysDic> list = sysDicService.list(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag, flag).orderByAsc(SysDic::getSort));
+        System.out.println();
         return list.stream().map(item -> new LabelValue(item.getName(), item.getName())).collect(Collectors.toList());
     }
 

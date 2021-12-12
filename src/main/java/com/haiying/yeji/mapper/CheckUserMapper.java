@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 考核人员信息设置 Mapper 接口
+ * 考核人员信息 Mapper 接口
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-12
  */
 @Mapper
 public interface CheckUserMapper extends BaseMapper<CheckUser> {

@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckStatus;
-import com.haiying.yeji.service.CheckScoreService;
 import com.haiying.yeji.service.CheckStatusService;
+import com.haiying.yeji.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class CheckStatusController {
     @Autowired
     CheckStatusService checkStatusService;
     @Autowired
-    CheckScoreService checkScoreService;
+    ScoreService scoreService;
 
     @GetMapping("list")
     public IPage<CheckStatus> list(int current, int pageSize) {

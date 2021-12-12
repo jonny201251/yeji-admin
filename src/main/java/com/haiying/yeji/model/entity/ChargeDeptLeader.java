@@ -3,9 +3,10 @@ package com.haiying.yeji.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -13,7 +14,7 @@ import lombok.Setter;
  * </p>
  *
  * @author 作者
- * @since 2021-12-09
+ * @since 2021-12-12
  */
 @Getter
 @Setter
@@ -31,9 +32,19 @@ public class ChargeDeptLeader implements Serializable {
     private String userName;
 
     /**
+     * 人员排序
+     */
+    private Double userSort;
+
+    /**
      * 部门id
      */
     private Integer deptId;
+
+    /**
+     * 部门排序
+     */
+    private Double deptSort;
 
 
 }

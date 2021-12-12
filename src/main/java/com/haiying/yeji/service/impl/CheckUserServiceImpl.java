@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 考核人员信息设置 服务实现类
+ * 考核人员信息 服务实现类
  * </p>
  *
  * @author 作者
- * @since 2021-12-04
+ * @since 2021-12-12
  */
 @Service
 public class CheckUserServiceImpl extends ServiceImpl<CheckUserMapper, CheckUser> implements CheckUserService {

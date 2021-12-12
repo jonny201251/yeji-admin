@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author 作者
- * @since 2021-12-11
+ * @since 2021-12-12
  */
 @RestController
-@RequestMapping("/check-score")
-public class CheckScoreController {
+@RequestMapping("/score")
+public class ScoreController {
 
 }

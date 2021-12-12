@@ -2,7 +2,6 @@ package com.haiying.yeji.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,12 +13,11 @@ import java.io.Serializable;
  * </p>
  *
  * @author 作者
- * @since 2021-12-11
+ * @since 2021-12-12
  */
 @Getter
 @Setter
-@TableName("check_score")
-public class CheckScore implements Serializable {
+public class Score implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,9 +40,24 @@ public class CheckScore implements Serializable {
     private Integer depttId;
 
     /**
+     * 被评分人部门排序
+     */
+    private Double depttSort;
+
+    /**
      * 被评分人姓名
      */
     private String userrName;
+
+    /**
+     * 被评分人类型
+     */
+    private String userrType;
+
+    /**
+     * 被评分人排序
+     */
+    private Double userrSort;
 
     /**
      * 被评分人类型：sys_dic.被考核对象
@@ -84,10 +97,19 @@ public class CheckScore implements Serializable {
     private String userName;
 
     /**
+     * 评分人的类型
+     */
+    private String userType;
+
+    /**
      * 评分人类型：sys_dic.考核人员类型
      */
     private String checkUserType;
 
+    /**
+     * 权重
+     */
+    private Double weight;
     /**
      * 评分状态：未评分，已评分
      */
