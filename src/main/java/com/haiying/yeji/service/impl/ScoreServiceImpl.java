@@ -117,7 +117,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         } else {
             //处理缺省 部门正职领导 情况
             List<CheckUser> list2 = new ArrayList<>();
-
+            System.out.println();
             return list2;
         }
     }
