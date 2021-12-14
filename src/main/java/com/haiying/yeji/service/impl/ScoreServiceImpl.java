@@ -58,6 +58,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
             score.setUserName(checkUser.getName());
             score.setUserType(checkUser.getUserType());
             score.setCheckUserType(checkkObject.getCheckUserType());
+            score.setCheckUserTypeSort(checkkObject.getId());
             score.setWeight(checkkObject.getWeight());
             //
             score.setStatus("未评分");
@@ -116,6 +117,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
             return list;
         } else {
             //处理缺省 部门正职领导 情况
+            //que
             List<CheckUser> list2 = new ArrayList<>();
             System.out.println();
             return list2;
@@ -141,7 +143,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 List<CheckUser> list2 = checkUserList.stream().filter(item -> item.getUserRole().equals(obj.getCheckkObject())).collect(Collectors.toList());
                 for (CheckUser checkkUser : list2) {
                     //考核人员类型
-                    if (obj.getCheckUserType().equals("其他公司领导")) {
+                    if (obj.getCheckUserType().equals("公司领导")) {
                         //用户角色=公司领导
                         list = checkUserList.stream().filter(item -> item.getUserRole().equals("公司领导")).collect(Collectors.toList());
                     } else if (obj.getCheckUserType().equals("主管部门正副职")) {

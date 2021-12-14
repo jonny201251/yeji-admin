@@ -106,6 +106,9 @@ public class Score implements Serializable {
      */
     private String checkUserType;
 
+    //考核人员类型的排序
+    private Integer checkUserTypeSort;
+
     /**
      * 权重
      */
