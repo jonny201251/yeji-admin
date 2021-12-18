@@ -28,7 +28,6 @@ public class OldDataController {
     @GetMapping("a")
     public boolean add() {
         Map<String, SysDept> deptMap = sysDeptService.list().stream().collect(Collectors.toMap(SysDept::getName, a -> a));
-
         List<DeptGroup> groupList = deptGroupService.list();
 
         List<CheckUser> list = service.list();
