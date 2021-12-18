@@ -9,7 +9,6 @@ import com.haiying.yeji.model.entity.*;
 import com.haiying.yeji.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,13 +69,17 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getUserRole().equals("部门正职领导") || item.getUserRole().equals("部门副职领导"))
                 .filter(item -> deptIdSet.contains(item.getDeptId()))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
     private List<CheckUser> get2List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
         List<ChargeDeptLeader> list = chargeDeptLeaderList.stream().filter(item -> item.getDeptId().equals(checkkUser.getDeptId())).collect(Collectors.toList());
         Set<String> userNameSet = list.stream().map(ChargeDeptLeader::getUserName).collect(Collectors.toSet());
-        return checkUserList.stream().filter(item -> userNameSet.contains(item.getName())).collect(Collectors.toList());
+        return checkUserList.stream()
+                .filter(item -> userNameSet.contains(item.getName()))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
+                .collect(Collectors.toList());
     }
 
     private List<CheckUser> get3List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
@@ -85,7 +88,10 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         Set<String> userNameSet = list.stream().map(ChargeDeptLeader::getUserName).collect(Collectors.toSet());
         //用户类型=公司领导
         List<CheckUser> list2 = checkUserList.stream().filter(item -> item.getUserType().equals("公司领导")).collect(Collectors.toList());
-        return list2.stream().filter(item -> !userNameSet.contains(item.getName())).collect(Collectors.toList());
+        return list2.stream()
+                .filter(item -> !userNameSet.contains(item.getName()))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
+                .collect(Collectors.toList());
     }
 
     private List<CheckUser> get4List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
@@ -93,6 +99,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getUserRole().equals("部门正职领导") || item.getUserRole().equals("部门副职领导"))
                 .filter(item -> !item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -101,6 +108,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                 .filter(item -> !item.getUserRole().equals("部门正职领导") && !item.getUserRole().equals("部门副职领导"))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -109,14 +117,16 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                 .filter(item -> item.getUserRole().equals("部门正职领导"))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
     private List<CheckUser> get7List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
         return checkUserList
                 .stream()
-                .filter(item -> item.getUserRole().equals("部门正职领导") || item.getUserRole().equals("部门副职领导"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> item.getUserRole().equals("部门正职领导") || item.getUserRole().equals("部门副职领导"))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -134,6 +144,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getUserRole().equals("班组成员"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> item.getGroupId().equals(checkkUser.getGroupId()))
                 .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
@@ -143,10 +154,11 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .stream()
                 .filter(item -> item.getUserRole().equals("班组长"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> item.getGroupId().equals(checkkUser.getGroupId()))
+                .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public boolean generate(Integer year) {
         //先删除,后插入
@@ -315,6 +327,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                             .stream()
                             .filter(item -> item.getPartyRole().equals("一般党员"))
                             .filter(item -> !nameSet.contains(item.getName()))
+                            .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                             .collect(Collectors.toList());
                     dataList.addAll(list7);
                     add(year, "党支部", obj, checkkUser, dataList);

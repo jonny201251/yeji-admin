@@ -35,7 +35,7 @@ public class PartyController {
 
     @GetMapping("list")
     public IPage<Party> list(int current, int pageSize) {
-        QueryWrapper<Party> wrapper = new QueryWrapper<Party>().select("distinct party_name");
+        QueryWrapper<Party> wrapper = new QueryWrapper<Party>().select("distinct party_name,sort").orderByAsc("sort");
         return partyService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -46,6 +46,7 @@ public class PartyController {
             Party party = new Party();
             party.setPartyName(partyVO.getPartyName());
             party.setDeptId(deptId);
+            party.setSort(partyVO.getSort());
             list.add(party);
         }
         return partyService.saveBatch(list);
@@ -57,6 +58,7 @@ public class PartyController {
         PartyVO partyVO = new PartyVO();
         partyVO.setPartyName(partyName);
         partyVO.setDeptIdList(list.stream().map(Party::getDeptId).collect(Collectors.toList()));
+        partyVO.setSort(list.get(0).getSort());
         return partyVO;
     }
 
@@ -77,7 +79,7 @@ public class PartyController {
 
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue() {
-        List<Party> list=partyService.list(new QueryWrapper<Party>().select("distinct party_name"));
+        List<Party> list = partyService.list(new QueryWrapper<Party>().select("distinct party_name"));
         return list.stream().map(item -> new LabelValue(item.getPartyName(), item.getPartyName())).collect(Collectors.toList());
     }
 }

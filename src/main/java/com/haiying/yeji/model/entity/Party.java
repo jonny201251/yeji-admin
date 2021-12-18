@@ -34,5 +34,5 @@ public class Party implements Serializable {
      */
     private Integer deptId;
 
-
+    private Double sort;
 }

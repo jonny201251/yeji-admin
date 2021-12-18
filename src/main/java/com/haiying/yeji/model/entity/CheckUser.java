@@ -81,6 +81,8 @@ public class CheckUser implements Serializable {
      */
     private Integer groupId;
 
+    private String groupName;
+
     /**
      * 党支部名称
      */

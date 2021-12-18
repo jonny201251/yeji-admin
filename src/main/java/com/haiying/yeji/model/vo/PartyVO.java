@@ -8,4 +8,5 @@ import java.util.List;
 public class PartyVO {
     private String partyName;
     private List<Integer> deptIdList;
+    private Double sort;
 }

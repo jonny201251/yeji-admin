@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckStatus;
 import com.haiying.yeji.service.CheckStatusService;
-import com.haiying.yeji.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +28,7 @@ import java.util.stream.Stream;
 public class CheckStatusController {
     @Autowired
     CheckStatusService checkStatusService;
-    @Autowired
-    ScoreService scoreService;
+
 
     @GetMapping("list")
     public IPage<CheckStatus> list(int current, int pageSize) {
@@ -38,13 +36,10 @@ public class CheckStatusController {
         return checkStatusService.page(new Page<>(current, pageSize), wrapper);
     }
 
-    //生成业绩评分
-
 
     @PostMapping("add")
     public boolean add(@RequestBody CheckStatus checkStatus) {
-        checkStatusService.save(checkStatus);
-        return true;
+        return checkStatusService.add(checkStatus);
     }
 
     @GetMapping("get")
@@ -54,14 +49,13 @@ public class CheckStatusController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody CheckStatus checkStatus) {
-        return checkStatusService.updateById(checkStatus);
+        return checkStatusService.edit(checkStatus);
     }
 
     @GetMapping("delete")
-    public boolean delete(Integer[] idArr) {
-        List<Integer> idList = Stream.of(idArr).collect(Collectors.toList());
+    public boolean delete(Integer[] arr) {
+        List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
         checkStatusService.removeByIds(idList);
-
         return true;
     }
 }

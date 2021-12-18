@@ -2,6 +2,8 @@ package com.haiying.yeji.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.DeptGroup;
 import com.haiying.yeji.model.vo.LabelValue;
@@ -30,9 +32,17 @@ public class DeptGroupController extends BaseController<DeptGroup> {
     @Autowired
     DeptGroupService deptGroupService;
 
+    @Override
+    @GetMapping("list")
+    public IPage<DeptGroup> list(int current, int pageSize) {
+        LambdaQueryWrapper<DeptGroup> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(DeptGroup::getDeptSort);
+        return deptGroupService.page(new Page<>(current, pageSize), wrapper);
+    }
+
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue(Integer deptId) {
-        List<DeptGroup> list = deptGroupService.list(new LambdaQueryWrapper<DeptGroup>().eq(DeptGroup::getDeptId, deptId));
+        List<DeptGroup> list = deptGroupService.list(new LambdaQueryWrapper<DeptGroup>().eq(DeptGroup::getDeptId, deptId).orderByAsc(DeptGroup::getDeptSort));
         return list.stream().map(item -> new LabelValue(item.getName(), item.getId())).collect(Collectors.toList());
     }
 

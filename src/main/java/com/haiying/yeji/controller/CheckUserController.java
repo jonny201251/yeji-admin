@@ -1,7 +1,10 @@
 package com.haiying.yeji.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.SysDept;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -26,16 +30,41 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/checkUser")
 @ResponseResultWrapper
-public class CheckUserController extends BaseController<CheckUser> {
+public class CheckUserController {
     @Autowired
     CheckUserService checkUserService;
     @Autowired
     SysDeptService sysDeptService;
 
-    @Override
+    @GetMapping("list")
+    public IPage<CheckUser> list(int current, int pageSize, String name) {
+        LambdaQueryWrapper<CheckUser> wrapper = new LambdaQueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(name)) {
+            wrapper.like(CheckUser::getName, name);
+        }
+        return checkUserService.page(new Page<>(current, pageSize), wrapper);
+    }
+
     @PostMapping("add")
     public boolean add(@RequestBody CheckUser checkUser) {
         return checkUserService.save(checkUser);
+    }
+
+
+    @GetMapping("get")
+    public CheckUser get(String id) {
+        return checkUserService.getById(id);
+    }
+
+    @PostMapping("edit")
+    public boolean edit(@RequestBody CheckUser checkUser) {
+        return checkUserService.updateById(checkUser);
+    }
+
+    @GetMapping("delete")
+    public boolean delete(Integer[] arr) {
+        List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
+        return checkUserService.removeByIds(idList);
     }
 
     @GetMapping("getChargeDeptLeader")

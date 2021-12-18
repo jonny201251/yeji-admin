@@ -3,9 +3,10 @@ package com.haiying.yeji.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -29,6 +30,8 @@ public class DeptGroup implements Serializable {
      * 部门id
      */
     private Integer deptId;
+
+    private Double deptSort;
 
     /**
      * 班组名称

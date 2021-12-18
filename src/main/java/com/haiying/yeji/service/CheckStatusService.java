@@ -12,5 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-12-04
  */
 public interface CheckStatusService extends IService<CheckStatus> {
-
+    boolean add(CheckStatus checkStatus);
+    boolean edit(CheckStatus checkStatus);
 }
