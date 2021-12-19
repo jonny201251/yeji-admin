@@ -3,15 +3,18 @@ package com.haiying.yeji.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.common.utils.TreeUtil;
 import com.haiying.yeji.model.entity.SysDept;
+import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.model.vo.TreeSelect;
 import com.haiying.yeji.service.SysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +43,10 @@ public class SysDeptController {
 
     @PostMapping("add")
     public boolean add(@RequestBody SysDept sysDept) {
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().eq(SysDept::getName, sysDept.getName()));
+        if (ObjectUtil.isNotEmpty(list)) {
+            throw new PageTipException(sysDept.getName() + "--已存在");
+        }
         return sysDeptService.save(sysDept);
     }
 
@@ -50,7 +57,7 @@ public class SysDeptController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody SysDept sysDept) {
-        return sysDeptService.updateById(sysDept);
+        return sysDeptService.edit(sysDept);
     }
 
     @GetMapping("delete")
@@ -78,8 +85,14 @@ public class SysDeptController {
 
     @GetMapping("getTreeSelect2")
     public List<TreeSelect> getTreeSelect2() {
-        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().ne(SysDept::getPid, 0).orderByAsc(SysDept::getSort));
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().ne(SysDept::getPid, 0).notIn(SysDept::getName, Arrays.asList("公司领导", "安全生产总监", "副总师级", "财务副总监")).orderByAsc(SysDept::getSort));
         return TreeUtil.getTreeSelect(list);
+    }
+
+    @GetMapping("getLabelValue")
+    public List<LabelValue> getLabelValue() {
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().ne(SysDept::getPid, 0).orderByAsc(SysDept::getSort));
+        return list.stream().map(item -> new LabelValue(item.getName(), item.getId())).collect(Collectors.toList());
     }
 
     @GetMapping("getIdNameMap")

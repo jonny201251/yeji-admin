@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-12-01
  */
 public interface SysDeptService extends IService<SysDept> {
-
+    boolean edit(SysDept sysDept);
 }

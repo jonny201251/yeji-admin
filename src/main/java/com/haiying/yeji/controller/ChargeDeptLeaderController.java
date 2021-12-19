@@ -73,4 +73,6 @@ public class ChargeDeptLeaderController {
         List<String> list = Stream.of(arr).collect(Collectors.toList());
         return chargeDeptLeaderService.remove(new LambdaQueryWrapper<ChargeDeptLeader>().in(ChargeDeptLeader::getUserName, list));
     }
+
+
 }

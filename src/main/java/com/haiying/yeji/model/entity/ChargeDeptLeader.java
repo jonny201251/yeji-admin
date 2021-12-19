@@ -41,10 +41,4 @@ public class ChargeDeptLeader implements Serializable {
      */
     private Integer deptId;
 
-    /**
-     * 部门排序
-     */
-    private Double deptSort;
-
-
 }

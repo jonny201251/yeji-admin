@@ -1,8 +1,6 @@
 package com.haiying.yeji.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -79,18 +77,21 @@ public class CheckUser implements Serializable {
     /**
      * 班组id
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer groupId;
-
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String groupName;
 
     /**
      * 党支部名称
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String partyName;
 
     /**
      * 党支部角色
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String partyRole;
 
     /**

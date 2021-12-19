@@ -1,7 +1,8 @@
 package com.haiying.yeji.service;
 
-import com.haiying.yeji.model.entity.Party;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.haiying.yeji.model.entity.Party;
+import com.haiying.yeji.model.vo.PartyVO;
 
 /**
  * <p>
@@ -12,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-12-09
  */
 public interface PartyService extends IService<Party> {
-
+    boolean edit(PartyVO partyVO);
 }

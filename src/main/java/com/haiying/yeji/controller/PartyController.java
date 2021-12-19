@@ -1,10 +1,12 @@
 package com.haiying.yeji.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.Party;
 import com.haiying.yeji.model.vo.LabelValue;
@@ -39,8 +41,13 @@ public class PartyController {
         return partyService.page(new Page<>(current, pageSize), wrapper);
     }
 
+
     @PostMapping("add")
     public boolean add(@RequestBody PartyVO partyVO) {
+        List<Party> partyList = partyService.list(new LambdaQueryWrapper<Party>().eq(Party::getPartyName, partyVO.getPartyName()));
+        if (ObjectUtil.isNotEmpty(partyList)) {
+            throw new PageTipException(partyVO.getPartyName() + "已经存在");
+        }
         List<Party> list = new ArrayList<>();
         for (Integer deptId : partyVO.getDeptIdList()) {
             Party party = new Party();
@@ -57,6 +64,7 @@ public class PartyController {
         List<Party> list = partyService.list(new LambdaQueryWrapper<Party>().eq(Party::getPartyName, partyName));
         PartyVO partyVO = new PartyVO();
         partyVO.setPartyName(partyName);
+        partyVO.setOldPartyName(partyName);
         partyVO.setDeptIdList(list.stream().map(Party::getDeptId).collect(Collectors.toList()));
         partyVO.setSort(list.get(0).getSort());
         return partyVO;
@@ -64,11 +72,7 @@ public class PartyController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody PartyVO partyVO) {
-        //先删除
-        partyService.remove(new LambdaQueryWrapper<Party>().eq(Party::getPartyName, partyVO.getPartyName()));
-        //后插入
-        add(partyVO);
-        return true;
+        return partyService.edit(partyVO);
     }
 
     @GetMapping("delete")
@@ -79,7 +83,7 @@ public class PartyController {
 
     @GetMapping("getLabelValue")
     public List<LabelValue> getLabelValue() {
-        List<Party> list = partyService.list(new QueryWrapper<Party>().select("distinct party_name"));
+        List<Party> list = partyService.list(new QueryWrapper<Party>().select("distinct party_name,sort").orderByAsc("sort"));
         return list.stream().map(item -> new LabelValue(item.getPartyName(), item.getPartyName())).collect(Collectors.toList());
     }
 }

@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
     private static final String RESPONSE_RESULT_TAG = "response_result_tag";
 
-
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

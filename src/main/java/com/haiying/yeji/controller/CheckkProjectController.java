@@ -50,7 +50,7 @@ public class CheckkProjectController {
         for (CheckkProject checkkProject : checkkProjectVO.getCheckList()) {
             //edit
             checkkProject.setId(null);
-
+            
             checkkProject.setCheckkObject(checkkProjectVO.getCheckkObject());
             checkkProject.setSort(sysDic.getSort());
         }

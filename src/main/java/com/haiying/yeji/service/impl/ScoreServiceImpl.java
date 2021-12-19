@@ -30,9 +30,13 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     @Autowired
     ChargeDeptLeaderService chargeDeptLeaderService;
     @Autowired
+    SysDeptService sysDeptService;
+    @Autowired
+    DeptScoreRelationService deptScoreRelationService;
+    @Autowired
     PartySecretaryService partySecretaryService;
     @Autowired
-    SysDeptService sysDeptService;
+    PartyService partyService;
 
     private void add(Integer year, String scoreType, CheckkObject checkkObject, CheckUser checkkUser, List<CheckUser> checkUserList) {
         if (ObjectUtil.isNotEmpty(checkUserList)) {
@@ -94,16 +98,20 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .collect(Collectors.toList());
     }
 
-    private List<CheckUser> get4List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
+    private List<CheckUser> get4List(List<CheckUser> checkUserList, List<DeptScoreRelation> deptScoreRelationList, CheckUser checkkUser) {
+        Set<Integer> deptIdSet = deptScoreRelationList.stream()
+                .filter(item -> item.getScoreeDeptId().equals(checkkUser.getDeptId()))
+                .map(DeptScoreRelation::getScoreDeptId)
+                .collect(Collectors.toSet());
         return checkUserList
                 .stream()
                 .filter(item -> item.getUserRole().equals("部门正职领导") || item.getUserRole().equals("部门副职领导"))
-                .filter(item -> !item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> deptIdSet.contains(checkkUser.getDeptId()))
                 .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
-    private List<CheckUser> get5List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
+    private List<CheckUser> get5List(List<CheckUser> checkUserList, CheckUser checkkUser) {
         return checkUserList
                 .stream()
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
@@ -130,21 +138,21 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 .collect(Collectors.toList());
     }
 
-    private List<CheckUser> get8List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
+    private List<CheckUser> get8List(List<CheckUser> checkUserList, CheckUser checkkUser) {
         return checkUserList
                 .stream()
-                .filter(item -> item.getUserRole().equals("一般管理人员"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
+                .filter(item -> item.getUserRole().equals("一般管理人员"))
                 .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
 
-    private List<CheckUser> get9List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
+    private List<CheckUser> get9List(List<CheckUser> checkUserList, CheckUser checkkUser) {
         return checkUserList
                 .stream()
-                .filter(item -> item.getUserRole().equals("班组成员"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                 .filter(item -> item.getGroupId().equals(checkkUser.getGroupId()))
+                .filter(item -> item.getUserRole().equals("班组成员"))
                 .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
@@ -152,9 +160,9 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     private List<CheckUser> get10List(List<CheckUser> checkUserList, List<ChargeDeptLeader> chargeDeptLeaderList, CheckUser checkkUser) {
         return checkUserList
                 .stream()
-                .filter(item -> item.getUserRole().equals("班组长"))
                 .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                 .filter(item -> item.getGroupId().equals(checkkUser.getGroupId()))
+                .filter(item -> item.getUserRole().equals("班组长"))
                 .filter(item -> !item.getName().equals(checkkUser.getName()))
                 .collect(Collectors.toList());
     }
@@ -166,8 +174,10 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         //
         List<CheckkObject> checkkObjectList = checkkObjectService.list(new LambdaQueryWrapper<CheckkObject>().orderByAsc(CheckkObject::getSort));
         List<CheckUser> checkUserList = checkUserService.list(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getWorkStatus, "在岗").orderByAsc(Arrays.asList(CheckUser::getDeptSort, CheckUser::getUserSort)));
-        List<ChargeDeptLeader> chargeDeptLeaderList = chargeDeptLeaderService.list(new LambdaQueryWrapper<ChargeDeptLeader>().orderByAsc(Arrays.asList(ChargeDeptLeader::getUserSort, ChargeDeptLeader::getDeptSort)));
+        List<ChargeDeptLeader> chargeDeptLeaderList = chargeDeptLeaderService.list(new LambdaQueryWrapper<ChargeDeptLeader>().orderByAsc(Arrays.asList(ChargeDeptLeader::getUserSort)));
         List<PartySecretary> partySecretaryList = partySecretaryService.list();
+        List<Party> partyList = partyService.list();
+        List<DeptScoreRelation> deptScoreRelationList = deptScoreRelationService.list();
         //考核人员
         List<CheckUser> list;
         for (CheckkObject obj : checkkObjectList) {
@@ -209,9 +219,9 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                     } else if (obj.getCheckUserType().equals("其他公司领导")) {
                         list = get3List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("相关部门正副职领导")) {
-                        list = get4List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get4List(checkUserList, deptScoreRelationList, checkkUser);
                     } else if (obj.getCheckUserType().equals("部门人员")) {
-                        list = get5List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get5List(checkUserList, checkkUser);
                     } else {
                         throw new PageTipException(obj.getCheckUserType() + "--错误");
                     }
@@ -225,11 +235,11 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                     } else if (obj.getCheckUserType().equals("其他公司领导")) {
                         list = get3List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("相关部门正副职领导")) {
-                        list = get4List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get4List(checkUserList, deptScoreRelationList, checkkUser);
                     } else if (obj.getCheckUserType().equals("本部门正职领导")) {
                         list = get6List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("部门人员")) {
-                        list = get5List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get5List(checkUserList, checkkUser);
                     } else {
                         throw new PageTipException(obj.getCheckUserType() + "--错误");
                     }
@@ -241,7 +251,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                     if (obj.getCheckUserType().equals("本部门正副职领导")) {
                         list = get7List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("一般管理人员")) {
-                        list = get8List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get8List(checkUserList, checkkUser);
                     } else {
                         throw new PageTipException(obj.getCheckUserType() + "--错误");
                     }
@@ -253,7 +263,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                     if (obj.getCheckUserType().equals("本部门正副职领导")) {
                         list = get7List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("班组成员")) {
-                        list = get9List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get9List(checkUserList, checkkUser);
                     } else {
                         throw new PageTipException(obj.getCheckUserType() + "--错误");
                     }
@@ -267,7 +277,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                     } else if (obj.getCheckUserType().equals("班组长")) {
                         list = get10List(checkUserList, chargeDeptLeaderList, checkkUser);
                     } else if (obj.getCheckUserType().equals("班组成员")) {
-                        list = get9List(checkUserList, chargeDeptLeaderList, checkkUser);
+                        list = get9List(checkUserList, checkkUser);
                     } else {
                         throw new PageTipException(obj.getCheckUserType() + "--错误");
                     }
@@ -302,14 +312,14 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                             .filter(item -> !nameSet.contains(item.getName()))
                             .collect(Collectors.toList());
                     dataList.addAll(list4);
-                    //党群部正职领导、公司办正职领导、人力资源部正职领导、纪检法审部正职领导
+                    //党群工作部正职领导、公司办正职领导、人力资源部正职领导、纪监法审部正职领导
                     nameSet.addAll(dataList.stream().map(CheckUser::getName).collect(Collectors.toSet()));
-                    List<SysDept> deptList = sysDeptService.list(new LambdaQueryWrapper<SysDept>().in(SysDept::getName, Arrays.asList("", "", "", "")));
-                    Set<Integer> deptSet = deptList.stream().map(SysDept::getId).collect(Collectors.toSet());
+                    List<SysDept> deptList = sysDeptService.list(new LambdaQueryWrapper<SysDept>().in(SysDept::getName, Arrays.asList("党群工作部", "公司办", "人力资源部", "纪监法审部")));
+                    Set<Integer> deptIdSet = deptList.stream().map(SysDept::getId).collect(Collectors.toSet());
                     List<CheckUser> list5 = checkUserList
                             .stream()
                             .filter(item -> item.getUserRole().equals("部门正职领导"))
-                            .filter(item -> deptSet.contains(item.getDeptId()))
+                            .filter(item -> deptIdSet.contains(item.getDeptId()))
                             .filter(item -> !nameSet.contains(item.getName()))
                             .collect(Collectors.toList());
                     dataList.addAll(list5);
@@ -322,12 +332,13 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                             .collect(Collectors.toList());
                     dataList.addAll(list6);
                     //一般党员
+                    Set<Integer> deptId2Set = partyList.stream().filter(item -> item.getPartyName().equals(checkkUser.getPartyName())).map(Party::getDeptId).collect(Collectors.toSet());
                     nameSet.addAll(dataList.stream().map(CheckUser::getName).collect(Collectors.toSet()));
                     List<CheckUser> list7 = checkUserList
                             .stream()
+                            .filter(item -> deptId2Set.contains(item.getDeptId()))
                             .filter(item -> item.getPartyRole().equals("一般党员"))
                             .filter(item -> !nameSet.contains(item.getName()))
-                            .filter(item -> item.getDeptId().equals(checkkUser.getDeptId()))
                             .collect(Collectors.toList());
                     dataList.addAll(list7);
                     add(year, "党支部", obj, checkkUser, dataList);

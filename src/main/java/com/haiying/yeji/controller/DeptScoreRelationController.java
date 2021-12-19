@@ -1,9 +1,11 @@
 package com.haiying.yeji.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.DeptScoreRelation;
 import com.haiying.yeji.model.vo.DeptScoreRelationVO;
@@ -37,8 +39,7 @@ public class DeptScoreRelationController {
         return deptScoreRelationService.page(new Page<>(current, pageSize), wrapper);
     }
 
-    @PostMapping("add")
-    public boolean add(@RequestBody DeptScoreRelationVO deptScoreRelationVO) {
+    private boolean addd(DeptScoreRelationVO deptScoreRelationVO) {
         List<DeptScoreRelation> list = new ArrayList<>();
         for (Integer scoreeDeptId : deptScoreRelationVO.getScoreeDeptIdList()) {
             DeptScoreRelation deptScoreRelation = new DeptScoreRelation();
@@ -47,6 +48,15 @@ public class DeptScoreRelationController {
             list.add(deptScoreRelation);
         }
         return deptScoreRelationService.saveBatch(list);
+    }
+
+    @PostMapping("add")
+    public boolean add(@RequestBody DeptScoreRelationVO deptScoreRelationVO) {
+        List<DeptScoreRelation> list = deptScoreRelationService.list(new LambdaQueryWrapper<DeptScoreRelation>().eq(DeptScoreRelation::getScoreDeptId, deptScoreRelationVO.getScoreDeptId()));
+        if (ObjectUtil.isNotEmpty(list)) {
+            throw new PageTipException("评分部门已经存在");
+        }
+        return addd(deptScoreRelationVO);
     }
 
     @GetMapping("get")
@@ -63,8 +73,7 @@ public class DeptScoreRelationController {
         //先删除
         deptScoreRelationService.remove(new LambdaQueryWrapper<DeptScoreRelation>().eq(DeptScoreRelation::getScoreDeptId, deptScoreRelationVO.getScoreDeptId()));
         //后插入
-        add(deptScoreRelationVO);
-        return true;
+        return addd(deptScoreRelationVO);
     }
 
     @GetMapping("delete")
