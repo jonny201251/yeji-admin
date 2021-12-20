@@ -39,6 +39,7 @@ public class Score implements Serializable {
      */
     private Integer depttId;
 
+    private String depttName;
     /**
      * 被评分人部门排序
      */
@@ -53,6 +54,8 @@ public class Score implements Serializable {
      * 被评分人类型
      */
     private String userrType;
+
+    private String userrRole;
 
     /**
      * 被评分人排序
@@ -91,6 +94,8 @@ public class Score implements Serializable {
      */
     private Integer deptId;
 
+    private String deptName;
+
     /**
      * 评分人姓名
      */
@@ -100,6 +105,8 @@ public class Score implements Serializable {
      * 评分人的类型
      */
     private String userType;
+
+    private String userRole;
 
     /**
      * 评分人类型：sys_dic.考核人员类型

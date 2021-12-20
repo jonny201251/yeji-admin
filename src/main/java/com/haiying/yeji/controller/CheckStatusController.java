@@ -49,7 +49,11 @@ public class CheckStatusController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody CheckStatus checkStatus) {
-        return checkStatusService.edit(checkStatus);
+        if (checkStatus.getStatus().equals("启动")) {
+            return checkStatusService.edit(checkStatus);
+        } else {
+            return checkStatusService.updateById(checkStatus);
+        }
     }
 
     @GetMapping("delete")
