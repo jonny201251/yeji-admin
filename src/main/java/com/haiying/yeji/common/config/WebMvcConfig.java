@@ -19,10 +19,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(new ResponseResultInterceptor()).addPathPatterns("/**");
         //配置登录拦截器
         List<String> excludeList = new ArrayList<>();
-        excludeList.add("/sysUser/login");
         excludeList.add("/login");
+        excludeList.add("/back");
         excludeList.add("/*.js");
         excludeList.add("/*.css");
+        excludeList.add("/*.svg");
 
 //        registry.addInterceptor(new UserLoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);
@@ -30,6 +31,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         super.addResourceHandlers(registry);
     }
