@@ -17,6 +17,7 @@ import com.haiying.yeji.service.SysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class CheckUserController {
     SysDeptService sysDeptService;
     @Autowired
     DeptGroupService deptGroupService;
+    @Autowired
+    HttpSession httpSession;
 
     @GetMapping("list")
     public IPage<CheckUser> list(int current, int pageSize,
@@ -127,5 +130,21 @@ public class CheckUserController {
         List<Integer> deptIdList = sysDeptService.list(new LambdaQueryWrapper<SysDept>().in(SysDept::getName, Arrays.asList("副总师级", "财务副总监"))).stream().map(SysDept::getId).collect(Collectors.toList());
         List<CheckUser> list = checkUserService.list(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getUserType, "公司领导").or().in(CheckUser::getDeptId, deptIdList));
         return list.stream().map(item -> new LabelValue(item.getName(), item.getName())).collect(Collectors.toList());
+    }
+
+    //用户自己，修改密码
+    @GetMapping("changePassword")
+    public boolean changePassword(String password1) {
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        user.setPassword(SecureUtil.md5(password1));
+        return checkUserService.updateById(user);
+    }
+
+    //管理人员初始化密码
+    @GetMapping("initPassword")
+    public boolean adminChangePassword(Integer id) {
+        CheckUser user = checkUserService.getById(id);
+        user.setPassword(SecureUtil.md5("123456"));
+        return checkUserService.updateById(user);
     }
 }
