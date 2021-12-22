@@ -76,14 +76,7 @@ public class ScoreController {
 
     @GetMapping("getScoreList")
     public List<Score> getScoreList() {
-//        List<ScoreVO> list = new ArrayList<>();
-        return scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, "高志国"));
-//        for (Score score : scoreList) {
-//            ScoreVO scoreVO = new ScoreVO();
-//            BeanUtils.copyProperties(score, scoreVO);
-//            list.add(scoreVO);
-//        }
-//        return list;
+        return scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, "朱佳"));
     }
 
     @GetMapping("generate")
