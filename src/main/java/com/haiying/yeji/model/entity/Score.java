@@ -33,6 +33,7 @@ public class Score implements Serializable {
      * 评分类别,部门（行政评分）,党支部（党务评分）
      */
     private String scoreType;
+    private String partyName;
 
     /**
      * 被评分人部门
@@ -66,6 +67,7 @@ public class Score implements Serializable {
      * 被评分人类型：sys_dic.被考核对象
      */
     private String checkkObject;
+    private Double checkkObjectSort;
 
     private Double score1;
 
@@ -96,6 +98,8 @@ public class Score implements Serializable {
 
     private String deptName;
 
+    private Double deptSort;
+
     /**
      * 评分人姓名
      */
@@ -114,7 +118,7 @@ public class Score implements Serializable {
     private String checkUserType;
 
     //考核人员类型的排序
-    private Integer checkUserTypeSort;
+    private Double checkUserTypeSort;
 
     /**
      * 权重

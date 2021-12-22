@@ -9,17 +9,21 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.DeptGroup;
+import com.haiying.yeji.model.entity.Party;
 import com.haiying.yeji.model.entity.SysDept;
 import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.service.CheckUserService;
 import com.haiying.yeji.service.DeptGroupService;
+import com.haiying.yeji.service.PartyService;
 import com.haiying.yeji.service.SysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +47,8 @@ public class CheckUserController {
     DeptGroupService deptGroupService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    PartyService partyService;
 
     @GetMapping("list")
     public IPage<CheckUser> list(int current, int pageSize,
@@ -146,5 +152,24 @@ public class CheckUserController {
         CheckUser user = checkUserService.getById(id);
         user.setPassword(SecureUtil.md5("123456"));
         return checkUserService.updateById(user);
+    }
+
+    //更新人员数据
+    @GetMapping("updatee")
+    public boolean updatee() {
+        List<CheckUser> dataList = new ArrayList<>();
+        Map<Integer, String> map = partyService.list().stream().collect(Collectors.toMap(Party::getDeptId, Party::getPartyName));
+        List<CheckUser> list = checkUserService.list();
+        for (CheckUser checkUser : list) {
+            //更新党支部
+            if (checkUser.getHavePartyMember().equals("是")) {
+                checkUser.setPartyName(map.get(checkUser.getDeptId()));
+                dataList.add(checkUser);
+            }
+            //更新人员类型
+
+        }
+        checkUserService.updateBatchById(dataList);
+        return true;
     }
 }

@@ -64,7 +64,7 @@ public class ScoreController {
         if (ObjectUtil.isNotEmpty(status)) {
             wrapper.eq(Score::getStatus, status);
         }
-
+//        wrapper.orderByAsc(Arrays.asList(Score::getCheckkObjectSort, Score::getCheckUserTypeSort));
         return scoreService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -72,6 +72,18 @@ public class ScoreController {
     public boolean delete(Integer[] arr) {
         List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
         return scoreService.removeByIds(idList);
+    }
+
+    @GetMapping("getScoreList")
+    public List<Score> getScoreList() {
+//        List<ScoreVO> list = new ArrayList<>();
+        return scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, "高志国"));
+//        for (Score score : scoreList) {
+//            ScoreVO scoreVO = new ScoreVO();
+//            BeanUtils.copyProperties(score, scoreVO);
+//            list.add(scoreVO);
+//        }
+//        return list;
     }
 
     @GetMapping("generate")

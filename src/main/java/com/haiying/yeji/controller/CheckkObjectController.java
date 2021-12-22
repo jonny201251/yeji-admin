@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,7 +38,7 @@ public class CheckkObjectController {
 
     @GetMapping("list")
     public IPage<CheckkObject> list(int current, int pageSize) {
-        QueryWrapper<CheckkObject> wrapper = new QueryWrapper<CheckkObject>().select("distinct checkk_object").orderByAsc("sort");
+        QueryWrapper<CheckkObject> wrapper = new QueryWrapper<CheckkObject>().select("distinct checkk_object").orderByAsc("checkk_object_sort");
         return checkkObjectService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -46,13 +47,16 @@ public class CheckkObjectController {
         //先删除
         checkkObjectService.remove(new LambdaQueryWrapper<CheckkObject>().eq(CheckkObject::getCheckkObject, checkkObjectVO.getCheckkObject()));
         //后插入
-        SysDic sysDic = sysDicService.getOne(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag, "被考核对象").eq(SysDic::getName, checkkObjectVO.getCheckkObject()));
+        Double checkkObjectSort = sysDicService.getOne(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag, "被考核对象").eq(SysDic::getName, checkkObjectVO.getCheckkObject())).getSort();
+        Map<String, Double> map = sysDicService.list(new LambdaQueryWrapper<SysDic>().eq(SysDic::getFlag, "考核人员类型")).stream()
+                .collect(Collectors.toMap(SysDic::getName, SysDic::getSort));
         for (CheckkObject checkkObject : checkkObjectVO.getCheckList()) {
             //edit
             checkkObject.setId(null);
 
             checkkObject.setCheckkObject(checkkObjectVO.getCheckkObject());
-            checkkObject.setSort(sysDic.getSort());
+            checkkObject.setCheckkObjectSort(checkkObjectSort);
+            checkkObject.setCheckUserTypeSort(map.get(checkkObject.getCheckUserType()));
         }
         return checkkObjectService.saveBatch(checkkObjectVO.getCheckList());
     }
