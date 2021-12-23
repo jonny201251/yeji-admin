@@ -50,7 +50,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setDepttName(checkkUser.getDeptName());
                 score.setDepttSort(checkkUser.getDeptSort());
                 score.setUserrName(checkkUser.getName());
-                score.setUserrType(checkkUser.getUserType());
+                score.setUserrType("  ");
                 score.setUserrRole(checkkUser.getUserRole());
                 score.setUserrSort(checkkUser.getUserSort());
                 score.setCheckkObject(checkkObject.getCheckkObject());
@@ -90,6 +90,10 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setUserrSort(checkkUser.getUserSort());
                 score.setCheckkObject(checkkObject.getCheckkObject());
                 score.setCheckkObjectSort(checkkObject.getCheckkObjectSort());
+                //
+                if (checkkUser.getUserType().equals("一般人员")) {
+                    score.setScore3(0d);
+                }
                 //
                 score.setDeptId(checkUser.getDeptId());
                 score.setDeptName(checkUser.getDeptName());

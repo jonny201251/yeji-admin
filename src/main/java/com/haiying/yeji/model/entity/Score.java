@@ -69,6 +69,7 @@ public class Score implements Serializable {
     private String checkkObject;
     private Double checkkObjectSort;
 
+    private Double score0;
     private Double score1;
 
     private Double score2;
@@ -86,8 +87,6 @@ public class Score implements Serializable {
     private Double score8;
 
     private Double score9;
-
-    private Double score10;
 
     private Double totalScore;
 

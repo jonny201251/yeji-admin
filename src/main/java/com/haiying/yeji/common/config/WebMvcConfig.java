@@ -19,13 +19,15 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(new ResponseResultInterceptor()).addPathPatterns("/**");
         //配置登录拦截器
         List<String> excludeList = new ArrayList<>();
+        excludeList.add("/checkUser/login");
+        excludeList.add("/login");
         excludeList.add("/login");
         excludeList.add("/back");
         excludeList.add("/*.js");
         excludeList.add("/*.css");
         excludeList.add("/*.svg");
 
-//        registry.addInterceptor(new UserLoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
+//        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);
     }
 

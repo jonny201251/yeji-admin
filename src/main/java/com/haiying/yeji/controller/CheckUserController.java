@@ -6,16 +6,13 @@ import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
-import com.haiying.yeji.model.entity.CheckUser;
-import com.haiying.yeji.model.entity.DeptGroup;
-import com.haiying.yeji.model.entity.Party;
-import com.haiying.yeji.model.entity.SysDept;
+import com.haiying.yeji.common.utils.TreeUtil;
+import com.haiying.yeji.model.entity.*;
 import com.haiying.yeji.model.vo.LabelValue;
-import com.haiying.yeji.service.CheckUserService;
-import com.haiying.yeji.service.DeptGroupService;
-import com.haiying.yeji.service.PartyService;
-import com.haiying.yeji.service.SysDeptService;
+import com.haiying.yeji.model.vo.UserVO;
+import com.haiying.yeji.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +46,8 @@ public class CheckUserController {
     HttpSession httpSession;
     @Autowired
     PartyService partyService;
+    @Autowired
+    SysPermissionService sysPermissionService;
 
     @GetMapping("list")
     public IPage<CheckUser> list(int current, int pageSize,
@@ -152,6 +151,49 @@ public class CheckUserController {
         CheckUser user = checkUserService.getById(id);
         user.setPassword(SecureUtil.md5("123456"));
         return checkUserService.updateById(user);
+    }
+
+    @PostMapping("login")
+    public UserVO login(@RequestBody CheckUser user) {
+        //根据 登录账号 查询出用户
+        List<CheckUser> userList = checkUserService.list(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getName, user.getName()));
+        if (userList.size() != 1) {
+            throw new PageTipException("用户名错误");
+        }
+        CheckUser dbUser = userList.get(0);
+        //校验 登录密码
+        String dbPassword = dbUser.getPassword();
+        String pagePassword = SecureUtil.md5(user.getPassword());
+        if (!dbPassword.equals(pagePassword)) {
+            throw new PageTipException("密码错误");
+        }
+        //
+        UserVO userVO = new UserVO();
+        userVO.setUser(dbUser);
+
+        List<SysPermission> menuList;
+        if (dbUser.getName().equals("张强")) {
+            menuList = sysPermissionService.list();
+        } else if (dbUser.getName().equals("陈玉莲")) {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(6, 14, 15, 19, 20, 21)));
+        } else if (dbUser.getUserType().equals("公司领导")) {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 15, 16, 18)));
+        } else if (dbUser.getUserType().equals("中层领导")) {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 15, 16, 17)));
+        } else {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 15)));
+        }
+        userVO.setMenuList(TreeUtil.getTree(menuList));
+        //
+        httpSession.removeAttribute("user");
+        httpSession.setAttribute("user", dbUser);
+        return userVO;
+    }
+
+    @GetMapping("logout")
+    public boolean logout() {
+        httpSession.removeAttribute("user");
+        return true;
     }
 
     //更新人员数据
