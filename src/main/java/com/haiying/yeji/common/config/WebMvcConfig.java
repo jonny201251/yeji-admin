@@ -27,12 +27,15 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         excludeList.add("/static/*.svg");
         excludeList.add("/favicon.ico");
 
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
+//        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeList);
         super.addInterceptors(registry);
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //
+        registry.addResourceHandler("/upload/**").addResourceLocations("file:D:/yejiFile/upload/");
+        //
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         super.addResourceHandlers(registry);

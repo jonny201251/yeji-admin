@@ -4,9 +4,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.DeptGroup;
 import com.haiying.yeji.model.entity.SysDept;
+import com.haiying.yeji.model.entity.Upload;
 import com.haiying.yeji.service.CheckUserService;
 import com.haiying.yeji.service.DeptGroupService;
 import com.haiying.yeji.service.SysDeptService;
+import com.haiying.yeji.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +27,9 @@ public class OldDataController {
     @Autowired
     DeptGroupService deptGroupService;
 
+    @Autowired
+    UploadService uploadService;
+
     @GetMapping("a")
     public boolean add() {
         Map<String, SysDept> deptMap = sysDeptService.list().stream().collect(Collectors.toMap(SysDept::getName, a -> a));
@@ -32,10 +37,10 @@ public class OldDataController {
 
         List<CheckUser> list = service.list();
         for (CheckUser checkUser : list) {
-            if(ObjectUtil.isNotEmpty(checkUser.getGroupName())) {
+            if (ObjectUtil.isNotEmpty(checkUser.getGroupName())) {
                 List<DeptGroup> collect = groupList.stream().filter(item -> item.getDeptId().equals(checkUser.getDeptId()) && item.getName().equals(checkUser.getGroupName())).collect(Collectors.toList());
                 if (collect.size() != 1) {
-                   throw new RuntimeException(checkUser.getName()+","+checkUser.getDeptName()+","+checkUser.getGroupName());
+                    throw new RuntimeException(checkUser.getName() + "," + checkUser.getDeptName() + "," + checkUser.getGroupName());
                 } else {
                     checkUser.setGroupId(collect.get(0).getId());
                 }
@@ -46,5 +51,13 @@ public class OldDataController {
         return true;
     }
 
+    @GetMapping("aa")
+    public boolean aa() {
+        List<Upload> list = uploadService.list();
+        for (Upload upload : list) {
+            upload.setDiskName("/yeji/upload/"+upload.getFileName());
+        }
+        return uploadService.updateBatchById(list);
+    }
 
 }
