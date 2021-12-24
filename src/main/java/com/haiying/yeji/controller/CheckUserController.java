@@ -49,6 +49,15 @@ public class CheckUserController {
     @Autowired
     SysPermissionService sysPermissionService;
 
+    @GetMapping("haveLogin")
+    public boolean haveLogin() {
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        return true;
+    }
+
     @GetMapping("list")
     public IPage<CheckUser> list(int current, int pageSize,
                                  String name, String gender, Integer deptId, String userRole, String userType,
@@ -108,7 +117,7 @@ public class CheckUserController {
     @PostMapping("add")
     public boolean add(@RequestBody CheckUser checkUser) {
         pre(checkUser);
-        checkUser.setPassword(SecureUtil.md5("123456"));
+        checkUser.setPassword(SecureUtil.md5("1"));
         return checkUserService.save(checkUser);
     }
 
@@ -141,6 +150,9 @@ public class CheckUserController {
     @GetMapping("changePassword")
     public boolean changePassword(String password1) {
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
         user.setPassword(SecureUtil.md5(password1));
         return checkUserService.updateById(user);
     }
@@ -149,7 +161,7 @@ public class CheckUserController {
     @GetMapping("initPassword")
     public boolean adminChangePassword(Integer id) {
         CheckUser user = checkUserService.getById(id);
-        user.setPassword(SecureUtil.md5("123456"));
+        user.setPassword(SecureUtil.md5("1"));
         return checkUserService.updateById(user);
     }
 
