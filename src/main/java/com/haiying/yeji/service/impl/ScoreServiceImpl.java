@@ -399,9 +399,10 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                         deptNameSet.add("人力资源部");
                         deptNameSet.add("纪监法审部");
                         Set<String> excludeNameSet = checkUserList.stream()
-                                .filter(item -> deptNameSet.contains(item.getName()))
+                                .filter(item -> deptNameSet.contains(item.getDeptName()))
                                 .filter(item -> item.getUserRole().equals("部门正职领导"))
                                 .map(CheckUser::getName).collect(Collectors.toSet());
+
                         list = checkUserList.stream()
                                 .filter(item -> deptIdSet.contains(item.getDeptId()))
                                 .filter(item -> item.getPartyRole() != null && item.getPartyRole().equals("一般党员") && !item.getUserRole().equals("特别人员"))
