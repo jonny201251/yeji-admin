@@ -188,8 +188,8 @@ public class CheckUserController {
             menuList = sysPermissionService.list();
         } else if (dbUser.getName().equals("陈玉莲")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(6, 14, 22,23, 19, 20, 21)));
-        } else if (dbUser.getUserType().equals("公司领导")) {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22,23, 16, 18)));
+        } else if (dbUser.getUserType().equals("公司领导") || dbUser.getUserRole().equals("副总师级") || dbUser.getUserRole().equals("财务副总监")) {
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14,23, 16, 18)));
         } else if (dbUser.getUserType().equals("中层领导")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22,23, 16, 17)));
         } else {

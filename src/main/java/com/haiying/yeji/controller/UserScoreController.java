@@ -3,6 +3,7 @@ package com.haiying.yeji.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haiying.yeji.common.exception.PageTipException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -35,7 +37,7 @@ public class UserScoreController {
     HttpSession httpSession;
 
     @GetMapping("list")
-    public IPage<Score> list(int current, int pageSize, String userrName, String checkkObject, String status) {
+    public IPage<Score> list(int current, int pageSize, String checkkObject, String userrName, String status) {
         LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<>();
         if (ObjectUtil.isNotEmpty(checkkObject)) {
             wrapper.eq(Score::getCheckkObject, checkkObject);
@@ -63,5 +65,16 @@ public class UserScoreController {
             throw new PageTipException("用户未登录");
         }
         return scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
+    }
+
+    @GetMapping("getCheckkObject")
+    public List<String> getCheckkObject() {
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        QueryWrapper<Score> wrapper = new QueryWrapper<Score>().eq("user_name", user.getName()).select("distinct checkk_object");
+        List<Score> list = scoreService.list(wrapper);
+        return list.stream().map(Score::getCheckkObject).collect(Collectors.toList());
     }
 }

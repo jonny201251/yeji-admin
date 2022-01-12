@@ -88,7 +88,11 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setUserrType(checkkUser.getUserType());
                 score.setUserrRole(checkkUser.getUserRole());
                 score.setUserrSort(checkkUser.getUserSort());
-                score.setCheckkObject(checkkObject.getCheckkObject());
+                if (checkkObject.getCheckkObject().equals("安全生产总监") || checkkObject.getCheckkObject().equals("财务副总监")) {
+                    score.setCheckkObject("副总师级");
+                } else {
+                    score.setCheckkObject(checkkObject.getCheckkObject());
+                }
                 score.setCheckkObjectSort(checkkObject.getCheckkObjectSort());
                 //
                 if (checkkUser.getUserType().equals("一般人员")) {
