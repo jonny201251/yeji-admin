@@ -87,7 +87,10 @@ public class UserScoreController {
         }
         list = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
         List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
-        Map<String, String> uploadMap = uploadList.stream().collect(Collectors.toMap(Upload::getUserName, Upload::getDiskName));
+        Map<String, String> uploadMap = new HashMap<>();
+        for (Upload upload : uploadList) {
+            uploadMap.put(upload.getUserName(),upload.getDiskName());
+        }
         for (Score score : list) {
             score.setDiskName(uploadMap.get(score.getUserrName()));
         }
