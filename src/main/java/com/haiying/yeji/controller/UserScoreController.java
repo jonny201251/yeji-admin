@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,7 +62,10 @@ public class UserScoreController {
         //
         List<Score> list = page.getRecords();
         List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
-        Map<String, String> uploadMap = uploadList.stream().collect(Collectors.toMap(Upload::getUserName, Upload::getDiskName));
+        Map<String, String> uploadMap = new HashMap<>();
+        for (Upload upload : uploadList) {
+            uploadMap.put(upload.getUserName(),upload.getDiskName());
+        }
         for (Score score : list) {
             score.setDiskName(uploadMap.get(score.getUserrName()));
         }
