@@ -10,13 +10,17 @@ import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.Score;
+import com.haiying.yeji.model.entity.Upload;
 import com.haiying.yeji.model.vo.ScoreVO;
 import com.haiying.yeji.service.ScoreService;
+import com.haiying.yeji.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +39,8 @@ public class UserScoreController {
     ScoreService scoreService;
     @Autowired
     HttpSession httpSession;
+    @Autowired
+    UploadService uploadService;
 
     @GetMapping("list")
     public IPage<Score> list(int current, int pageSize, String checkkObject, String userrName, String status) {
@@ -50,9 +56,18 @@ public class UserScoreController {
         }
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
         wrapper.eq(Score::getUserName, user.getName());
-        return scoreService.page(new Page<>(current, pageSize), wrapper);
+        IPage<Score> page = scoreService.page(new Page<>(current, pageSize), wrapper);
+        //
+        List<Score> list = page.getRecords();
+        List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
+        Map<String, String> uploadMap = uploadList.stream().collect(Collectors.toMap(Upload::getUserName, Upload::getDiskName));
+        for (Score score : list) {
+            score.setDiskName(uploadMap.get(score.getUserrName()));
+        }
+        return page;
     }
 
+    //批量评分
     @PostMapping("edit")
     public boolean edit(@RequestBody ScoreVO scoreVO) {
         return scoreService.updateBatchById(scoreVO.getScoreList());
@@ -60,11 +75,42 @@ public class UserScoreController {
 
     @GetMapping("getScoreList")
     public List<Score> getScoreList() {
+        List<Score> list;
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
         if (user == null) {
             throw new PageTipException("用户未登录");
         }
-        return scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
+        list = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
+        List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
+        Map<String, String> uploadMap = uploadList.stream().collect(Collectors.toMap(Upload::getUserName, Upload::getDiskName));
+        for (Score score : list) {
+            score.setDiskName(uploadMap.get(score.getUserrName()));
+        }
+        return list;
+    }
+
+    //单人评分
+    @PostMapping("edit2")
+    public boolean edit2(@RequestBody Score score) {
+        return scoreService.updateById(score);
+    }
+
+    @GetMapping("getScoreList2")
+    public List<Score> getScoreList2(Integer id, String userrType, String checkkObject) {
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Score::getUserName, user.getName()).eq(Score::getScoreType, "行政评分").ne(Score::getId, id);
+        if (userrType.equals("一般人员")) {
+            wrapper.eq(Score::getUserrType, userrType);
+        } else if (checkkObject.equals("副总师级") || checkkObject.equals("部门正职领导")) {
+            wrapper.in(Score::getCheckkObject, Arrays.asList("副总师级", "部门正职领导"));
+        } else if (checkkObject.equals("部门副职领导")) {
+            wrapper.eq(Score::getCheckkObject, checkkObject);
+        }
+        return scoreService.list(wrapper);
     }
 
     @GetMapping("getCheckkObject")

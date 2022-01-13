@@ -1,6 +1,7 @@
 package com.haiying.yeji.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Getter;
 import lombok.Setter;
@@ -128,5 +129,8 @@ public class Score implements Serializable {
      */
     private String status;
 
+    //述职材料
+    @TableField(exist = false)
+    private String diskName;
 
 }
