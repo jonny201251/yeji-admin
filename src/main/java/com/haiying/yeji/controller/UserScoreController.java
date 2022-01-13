@@ -11,6 +11,7 @@ import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.Score;
 import com.haiying.yeji.model.entity.Upload;
+import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.model.vo.ScoreVO;
 import com.haiying.yeji.service.ScoreService;
 import com.haiying.yeji.service.UploadService;
@@ -114,13 +115,21 @@ public class UserScoreController {
     }
 
     @GetMapping("getCheckkObject")
-    public List<String> getCheckkObject() {
+    public List<LabelValue> getCheckkObject() {
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
         if (user == null) {
             throw new PageTipException("用户未登录");
         }
         QueryWrapper<Score> wrapper = new QueryWrapper<Score>().eq("user_name", user.getName()).select("distinct checkk_object");
         List<Score> list = scoreService.list(wrapper);
-        return list.stream().map(Score::getCheckkObject).collect(Collectors.toList());
+        return list.stream().map(item -> new LabelValue(item.getCheckkObject(), item.getCheckkObject())).collect(Collectors.toList());
     }
+
+    @GetMapping("getCheckkObjectAll")
+    public List<LabelValue> getCheckkObjectAll() {
+        QueryWrapper<Score> wrapper = new QueryWrapper<Score>().select("distinct checkk_object");
+        List<Score> list = scoreService.list(wrapper);
+        return list.stream().map(item -> new LabelValue(item.getCheckkObject(), item.getCheckkObject())).collect(Collectors.toList());
+    }
+
 }
