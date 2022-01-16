@@ -15,9 +15,9 @@ import java.util.Map;
 
 @Configuration
 public class DruidConfig {
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @ConfigurationProperties(prefix = "spring.datasource.druid")
     @Bean
-    public DataSource druidDataSource() {
+    public DataSource dataSource() {
         return new DruidDataSource();
     }
 
@@ -28,8 +28,8 @@ public class DruidConfig {
         ServletRegistrationBean<StatViewServlet> bean = new ServletRegistrationBean<>(new StatViewServlet());
         bean.addUrlMappings("/druid/*");
         Map<String, String> initParams = new HashMap<String, String>();
-        initParams.put("loginUsername", "guest");//账户密码是固定的
-        initParams.put("loginPassword", "guest");
+        initParams.put("loginUsername", "admin");//账户密码是固定的
+        initParams.put("loginPassword", "admin");
         initParams.put("allow", "");//这个值为空就允许所有人访问
         bean.setInitParameters(initParams);
         return bean;
