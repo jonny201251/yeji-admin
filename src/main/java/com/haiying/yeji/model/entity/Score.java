@@ -123,7 +123,7 @@ public class Score implements Serializable {
     /**
      * 权重
      */
-    private Double weight;
+    private Double checkWeight;
     /**
      * 评分状态：未评分，已评分
      */

@@ -64,7 +64,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setUserRole(checkUser.getUserRole());
                 score.setCheckUserType(checkkObject.getCheckUserType());
                 score.setCheckUserTypeSort(checkkObject.getCheckUserTypeSort());
-                score.setWeight(checkkObject.getWeight());
+                score.setCheckWeight(checkkObject.getWeight());
                 //
                 score.setStatus("未评分");
                 scoreList.add(score);
@@ -107,7 +107,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setUserRole(checkUser.getUserRole());
                 score.setCheckUserType(checkkObject.getCheckUserType());
                 score.setCheckUserTypeSort(checkkObject.getCheckUserTypeSort());
-                score.setWeight(checkkObject.getWeight());
+                score.setCheckWeight(checkkObject.getWeight());
                 //
                 score.setStatus("未评分");
                 scoreList.add(score);

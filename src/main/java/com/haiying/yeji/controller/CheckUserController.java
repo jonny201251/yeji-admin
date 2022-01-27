@@ -48,6 +48,8 @@ public class CheckUserController {
     PartyService partyService;
     @Autowired
     SysPermissionService sysPermissionService;
+    @Autowired
+    CheckStatusService checkStatusService;
 
     @GetMapping("haveLogin")
     public boolean haveLogin() {
@@ -194,7 +196,7 @@ public class CheckUserController {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23)));
         } else if (dbUser.getUserType().equals("公司领导")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 23, 16, 18)));
-        } else if (dbUser.getUserType().equals("中层领导")) {
+        } else if (dbUser.getUserRole().equals("部门正职领导")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23, 16, 17)));
         } else {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23)));
@@ -203,6 +205,11 @@ public class CheckUserController {
         //
         httpSession.removeAttribute("user");
         httpSession.setAttribute("user", dbUser);
+        //
+        CheckStatus checkStatus = checkStatusService.getOne(new LambdaQueryWrapper<CheckStatus>().eq(CheckStatus::getStatus, "启动"));
+        if (checkStatus != null) {
+            httpSession.setAttribute("checkYear", checkStatus.getYear());
+        }
         return userVO;
     }
 
