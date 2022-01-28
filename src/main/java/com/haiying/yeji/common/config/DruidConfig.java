@@ -42,7 +42,7 @@ public class DruidConfig {
         bean.setFilter(new WebStatFilter());
         bean.addUrlPatterns("/*");
         //可以过滤和排除哪些东西
-        Map<String, String> initParams = new HashMap<String, String>();
+        Map<String, String> initParams = new HashMap<>();
         //把不需要监控的过滤掉,这些不进行统计
         initParams.put("exclusions", "*.js,*.css,/druid/*");
         bean.setInitParameters(initParams);

@@ -2,6 +2,10 @@ package com.haiying.yeji.controller;
 
 
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,18 +15,20 @@ import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.Score;
 import com.haiying.yeji.model.entity.Upload;
+import com.haiying.yeji.model.excel.ScoreExcel;
 import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.model.vo.ScoreVO;
 import com.haiying.yeji.service.ScoreService;
 import com.haiying.yeji.service.UploadService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -139,4 +145,31 @@ public class UserScoreController {
         return list.stream().map(item -> new LabelValue(item.getCheckkObject(), item.getCheckkObject())).collect(Collectors.toList());
     }
 
+    //下载评分模板
+    @GetMapping("download1")
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode(user.getName()+"的评分模板", "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+        //
+        ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).useDefaultStyle(false).excelType(ExcelTypeEnum.XLS).build();
+        //
+        List<ScoreExcel> data0List = new ArrayList<>();
+        List<Score> scoreList = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
+        for (Score score : scoreList) {
+            ScoreExcel scoreExcel=new ScoreExcel();
+            BeanUtils.copyProperties(score,scoreExcel);
+            data0List.add(scoreExcel);
+        }
+        WriteSheet sheet0 = EasyExcel.writerSheet(0, "评分信息").head(ScoreExcel.class).build();
+        //
+        excelWriter.write(data0List, sheet0);
+        //
+        excelWriter.finish();
+    }
 }
