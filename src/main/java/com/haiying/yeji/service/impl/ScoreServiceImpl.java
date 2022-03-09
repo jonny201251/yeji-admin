@@ -1,12 +1,16 @@
 package com.haiying.yeji.service.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.mapper.ScoreMapper;
 import com.haiying.yeji.model.entity.*;
 import com.haiying.yeji.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,12 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     PartySecretaryService partySecretaryService;
     @Autowired
     PartyService partyService;
+    @Autowired
+    ScoreResult1Service scoreResult1Service;
+    @Autowired
+    ScoreResult2Service scoreResult2Service;
+    @Autowired
+    ScoreResult22Service scoreResult22Service;
 
     private void partyAdd(Integer year, CheckkObject checkkObject, CheckUser checkkUser, List<CheckUser> checkUserList) {
         if (ObjectUtil.isNotEmpty(checkUserList)) {
@@ -416,6 +426,250 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
             }
         }
         return true;
+    }
+
+    //获取比例
+    private List<Double> getRateList(String checkkObject) {
+        if (checkkObject.equals("安全生产总监") || checkkObject.equals("副总师级") || checkkObject.equals("财务副总监") || checkkObject.equals("部门正职领导") || checkkObject.equals("部门副职领导")) {
+            return Arrays.asList(0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.4d);
+        } else {
+            return Arrays.asList(0.1d, 0.1d, 0.1d, 0d, 0.15d, 0.15d, 0.4d);
+        }
+    }
+
+    @Override
+    public boolean computeScoreResult1(Integer year) {
+        List<ScoreResult1> result1List = new ArrayList<>();
+
+        List<Score> scoreList = this.list(new QueryWrapper<Score>().eq("year", year).eq("status", "已评分").eq("score_type", "行政评分"));
+        List<CheckkObject> checkkObjectList = checkkObjectService.list(new QueryWrapper<CheckkObject>().ne("checkk_object", "党支部书记"));
+        List<CheckUser> checkUserList = checkUserService.list();
+        //
+        Map<String, List<CheckkObject>> checkkObjectMap = new LinkedHashMap<>();
+        for (CheckkObject checkkObject : checkkObjectList) {
+            String key = checkkObject.getCheckkObject();
+            List<CheckkObject> list = checkkObjectMap.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(checkkObject);
+                checkkObjectMap.put(key, list);
+            } else {
+                list.add(checkkObject);
+            }
+        }
+        for (String checkkObject : checkkObjectMap.keySet()) {
+            //取出被考核人员
+            List<String> userList = checkUserList.stream().filter(item -> item.getUserRole().equals(checkkObject)).map(CheckUser::getName).collect(Collectors.toList());
+            for (String userrName : userList) {
+                List<CheckkObject> checkUserTypeList = checkkObjectMap.get(checkkObject);
+                for (CheckkObject object : checkUserTypeList) {
+                    List<Double> rateList = getRateList(object.getCheckkObject());
+                    List<Score> scoreListt = scoreList.stream()
+                            .filter(item -> item.getUserrName().equals(userrName) && item.getCheckUserType().equals(object.getCheckUserType()))
+                            .collect(Collectors.toList());
+                    if (ObjectUtil.isNotEmpty(scoreListt)) {
+                        ScoreResult1 scoreResult1 = new ScoreResult1();
+                        BeanUtils.copyProperties(scoreListt.get(0), scoreResult1);
+                        scoreResult1.setId(null);
+                        for (int i = 0; i < 7; i++) {
+                            Double sum = 0d;
+                            for (Score score : scoreListt) {
+                                sum += (Double) ReflectUtil.getFieldValue(score, "score" + i);
+                            }
+                            ReflectUtil.setFieldValue(scoreResult1, "score" + i, NumberUtil.div(sum, Double.valueOf("" + scoreListt.size()), 2));
+                        }
+                        Double total = 0d;
+                        for (int i = 0; i < 7; i++) {
+                            total += ((Double) ReflectUtil.getFieldValue(scoreResult1, "score" + i) * rateList.get(i));
+                        }
+                        scoreResult1.setTotalScore(total);
+                        result1List.add(scoreResult1);
+                    }
+                }
+            }
+        }
+        return scoreResult1Service.saveBatch(result1List);
+    }
+
+    @Override
+    public boolean computeScoreResult11(Integer year) {
+        List<ScoreResult1> result1List = new ArrayList<>();
+
+        List<Score> scoreList = this.list(new QueryWrapper<Score>().eq("year", year).eq("status", "已评分").eq("score_type", "党务评分"));
+        List<CheckkObject> checkkObjectList = checkkObjectService.list(new QueryWrapper<CheckkObject>().eq("checkk_object", "党支部书记"));
+        List<CheckUser> checkUserList = checkUserService.list(new QueryWrapper<CheckUser>().eq("party_role","兼职支部书记"));
+        //
+        Map<String, List<CheckkObject>> checkkObjectMap = new LinkedHashMap<>();
+        for (CheckkObject checkkObject : checkkObjectList) {
+            String key = checkkObject.getCheckkObject();
+            List<CheckkObject> list = checkkObjectMap.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(checkkObject);
+                checkkObjectMap.put(key, list);
+            } else {
+                list.add(checkkObject);
+            }
+        }
+        System.out.println();
+        for (String checkkObject : checkkObjectMap.keySet()) {
+            //取出被考核人员
+            List<String> userList = checkUserList.stream().map(CheckUser::getName).collect(Collectors.toList());
+            for (String userrName : userList) {
+                List<CheckkObject> checkUserTypeList = checkkObjectMap.get(checkkObject);
+                for (CheckkObject object : checkUserTypeList) {
+                    List<Double> rateList = Arrays.asList(0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.4d);
+                    List<Score> scoreListt = scoreList.stream()
+                            .filter(item -> item.getUserrName().equals(userrName) && item.getCheckUserType().equals(object.getCheckUserType()))
+                            .collect(Collectors.toList());
+                    if (ObjectUtil.isNotEmpty(scoreListt)) {
+                        ScoreResult1 scoreResult1 = new ScoreResult1();
+                        BeanUtils.copyProperties(scoreListt.get(0), scoreResult1);
+                        scoreResult1.setId(null);
+                        for (int i = 0; i < 7; i++) {
+                            Double sum = 0d;
+                            for (Score score : scoreListt) {
+                                sum += (Double) ReflectUtil.getFieldValue(score, "score" + i);
+                            }
+                            ReflectUtil.setFieldValue(scoreResult1, "score" + i, NumberUtil.div(sum, Double.valueOf("" + scoreListt.size()), 2));
+                        }
+                        Double total = 0d;
+                        for (int i = 0; i < 7; i++) {
+                            total += ((Double) ReflectUtil.getFieldValue(scoreResult1, "score" + i) * rateList.get(i));
+                        }
+                        scoreResult1.setTotalScore(total);
+                        result1List.add(scoreResult1);
+                    }
+                }
+            }
+        }
+        return scoreResult1Service.saveBatch(result1List);
+    }
+
+    @Override
+    public boolean computeScoreResult2(Integer year) {
+        List<ScoreResult2> result2List = new ArrayList<>();
+
+        List<ScoreResult1> result1List = scoreResult1Service.list(new QueryWrapper<ScoreResult1>().eq("score_type", "行政评分"));
+        Map<String, List<ScoreResult1>> result1Map = new LinkedHashMap<>();
+        for (ScoreResult1 scoreResult1 : result1List) {
+            String key = scoreResult1.getUserrName();
+            List<ScoreResult1> list = result1Map.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(scoreResult1);
+                result1Map.put(key, list);
+            } else {
+                list.add(scoreResult1);
+            }
+        }
+
+        for (Map.Entry<String, List<ScoreResult1>> entry : result1Map.entrySet()) {
+            List<ScoreResult1> list = entry.getValue();
+            ScoreResult2 scoreResult2 = new ScoreResult2();
+            BeanUtils.copyProperties(list.get(0), scoreResult2);
+            scoreResult2.setId(null);
+            Double total;
+            for (ScoreResult1 item : list) {
+
+            }
+
+        }
+
+        return scoreResult2Service.saveBatch(result2List);
+    }
+
+    @Override
+    public boolean computeScoreResult22(Integer year) {
+        List<ScoreResult22> result22List = new ArrayList<>();
+
+        List<ScoreResult1> result1List = scoreResult1Service.list(new QueryWrapper<ScoreResult1>().eq("score_type", "行政评分"));
+        Map<String, List<ScoreResult1>> result1Map = new LinkedHashMap<>();
+        for (ScoreResult1 scoreResult1 : result1List) {
+            String key = scoreResult1.getUserrName();
+            List<ScoreResult1> list = result1Map.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(scoreResult1);
+                result1Map.put(key, list);
+            } else {
+                list.add(scoreResult1);
+            }
+        }
+
+        for (Map.Entry<String, List<ScoreResult1>> entry : result1Map.entrySet()) {
+            List<ScoreResult1> list = entry.getValue();
+            ScoreResult22 scoreResult22 = new ScoreResult22();
+            BeanUtils.copyProperties(list.get(0), scoreResult22);
+            scoreResult22.setId(null);
+
+            List<Double> rateList=getRateList(list.get(0).getCheckkObject());
+
+            for (int i = 0; i < 7; i++) {
+                Double sum = 0d;
+                for (ScoreResult1 scoreResult1 : list) {
+                    sum += (Double) ReflectUtil.getFieldValue(scoreResult1, "score" + i);
+                }
+                ReflectUtil.setFieldValue(scoreResult22, "score" + i, NumberUtil.div(sum, Double.valueOf("" + list.size()), 2));
+            }
+            Double total = 0d;
+            for (int i = 0; i < 7; i++) {
+                total += ((Double) ReflectUtil.getFieldValue(scoreResult22, "score" + i) * rateList.get(i));
+            }
+            scoreResult22.setTotalScore(total);
+
+            result22List.add(scoreResult22);
+        }
+        return scoreResult22Service.saveBatch(result22List);
+    }
+
+    @Override
+    public boolean computeScoreResult3(Integer year) {
+        return false;
+    }
+
+    @Override
+    public boolean computeScoreResult23(Integer year) {
+        List<ScoreResult22> result22List = new ArrayList<>();
+
+        List<ScoreResult1> result1List = scoreResult1Service.list(new QueryWrapper<ScoreResult1>().eq("score_type", "党务评分"));
+        Map<String, List<ScoreResult1>> result1Map = new LinkedHashMap<>();
+        for (ScoreResult1 scoreResult1 : result1List) {
+            String key = scoreResult1.getUserrName();
+            List<ScoreResult1> list = result1Map.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(scoreResult1);
+                result1Map.put(key, list);
+            } else {
+                list.add(scoreResult1);
+            }
+        }
+
+        for (Map.Entry<String, List<ScoreResult1>> entry : result1Map.entrySet()) {
+            List<ScoreResult1> list = entry.getValue();
+            ScoreResult22 scoreResult22 = new ScoreResult22();
+            BeanUtils.copyProperties(list.get(0), scoreResult22);
+            scoreResult22.setId(null);
+
+            List<Double> rateList = Arrays.asList(0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.4d);
+
+            for (int i = 0; i < 7; i++) {
+                Double sum = 0d;
+                for (ScoreResult1 scoreResult1 : list) {
+                    sum += (Double) ReflectUtil.getFieldValue(scoreResult1, "score" + i);
+                }
+                ReflectUtil.setFieldValue(scoreResult22, "score" + i, NumberUtil.div(sum, Double.valueOf("" + list.size()), 2));
+            }
+            Double total = 0d;
+            for (int i = 0; i < 7; i++) {
+                total += ((Double) ReflectUtil.getFieldValue(scoreResult22, "score" + i) * rateList.get(i));
+            }
+            scoreResult22.setTotalScore(total);
+
+            result22List.add(scoreResult22);
+        }
+        return scoreResult22Service.saveBatch(result22List);
     }
 
 

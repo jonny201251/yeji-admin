@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class CodeGenerator {
     //表名称
-    private static String[] includeArr = {"upload"};
+    private static String[] includeArr = {"score_result22"};
 
     public static void main(String[] args) {
         String projectPath = System.getProperty("user.dir");

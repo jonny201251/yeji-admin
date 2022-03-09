@@ -13,5 +13,11 @@ import com.haiying.yeji.model.entity.Score;
  */
 public interface ScoreService extends IService<Score> {
     boolean generate(Integer year);
+    boolean computeScoreResult1(Integer year);
+    boolean computeScoreResult11(Integer year);
+    boolean computeScoreResult2(Integer year);
+    boolean computeScoreResult22(Integer year);
+    boolean computeScoreResult3(Integer year);
 
+    boolean computeScoreResult23(Integer year);
 }

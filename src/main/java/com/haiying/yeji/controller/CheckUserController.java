@@ -191,11 +191,11 @@ public class CheckUserController {
         } else if (dbUser.getName().equals("陈玉莲")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(6, 14, 22, 23, 19, 20, 21)));
         } else if (dbUser.getUserRole().equals("安全生产总监")) {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23, 16, 18)));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23, 16,26,25)));
         } else if (dbUser.getUserRole().equals("副总师级") || dbUser.getUserRole().equals("财务副总监")) {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23)));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23,26,25)));
         } else if (dbUser.getUserType().equals("公司领导")) {
-            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 23, 16, 18)));
+            menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 23, 16,26,25)));
         } else if (dbUser.getUserRole().equals("部门正职领导")) {
             menuList = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().in(SysPermission::getId, Arrays.asList(14, 22, 23, 16, 17)));
         } else {

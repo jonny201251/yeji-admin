@@ -95,6 +95,12 @@ public class SysDeptController {
         return list.stream().map(item -> new LabelValue(item.getName(), item.getId())).collect(Collectors.toList());
     }
 
+    @GetMapping("getLabelValue2")
+    public List<LabelValue> getLabelValue2() {
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().orderByAsc(SysDept::getSort));
+        return list.stream().map(item -> new LabelValue(item.getName(), item.getName())).collect(Collectors.toList());
+    }
+
     @GetMapping("getIdNameMap")
     public Map<Integer, String> getIdNameMap() {
         List<SysDept> list = sysDeptService.list();
