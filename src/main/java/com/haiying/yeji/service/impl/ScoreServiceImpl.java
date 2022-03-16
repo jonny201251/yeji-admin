@@ -546,38 +546,6 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         return scoreResult1Service.saveBatch(result1List);
     }
 
-    @Override
-    public boolean computeScoreResult2(Integer year) {
-        List<ScoreResult2> result2List = new ArrayList<>();
-
-        List<ScoreResult1> result1List = scoreResult1Service.list(new QueryWrapper<ScoreResult1>().eq("score_type", "行政评分"));
-        Map<String, List<ScoreResult1>> result1Map = new LinkedHashMap<>();
-        for (ScoreResult1 scoreResult1 : result1List) {
-            String key = scoreResult1.getUserrName();
-            List<ScoreResult1> list = result1Map.get(key);
-            if (list == null) {
-                list = new ArrayList<>();
-                list.add(scoreResult1);
-                result1Map.put(key, list);
-            } else {
-                list.add(scoreResult1);
-            }
-        }
-
-        for (Map.Entry<String, List<ScoreResult1>> entry : result1Map.entrySet()) {
-            List<ScoreResult1> list = entry.getValue();
-            ScoreResult2 scoreResult2 = new ScoreResult2();
-            BeanUtils.copyProperties(list.get(0), scoreResult2);
-            scoreResult2.setId(null);
-            Double total;
-            for (ScoreResult1 item : list) {
-
-            }
-
-        }
-
-        return scoreResult2Service.saveBatch(result2List);
-    }
 
     @Override
     public boolean computeScoreResult22(Integer year) {
@@ -623,10 +591,6 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         return scoreResult22Service.saveBatch(result22List);
     }
 
-    @Override
-    public boolean computeScoreResult3(Integer year) {
-        return false;
-    }
 
     @Override
     public boolean computeScoreResult23(Integer year) {

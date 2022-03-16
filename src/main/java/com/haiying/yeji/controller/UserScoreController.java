@@ -90,8 +90,8 @@ public class UserScoreController {
     //批量评分
     @PostMapping("edit")
     public boolean edit(@RequestBody ScoreVO scoreVO) {
-        throw new PageTipException("考核已结束,无法批量评分");
-//        return scoreService.updateBatchById(scoreVO.getScoreList());
+//        throw new PageTipException("考核已结束,无法批量评分");
+        return scoreService.updateBatchById(scoreVO.getScoreList());
     }
 
     @GetMapping("getScoreList")
@@ -116,8 +116,8 @@ public class UserScoreController {
     //单人评分
     @PostMapping("edit2")
     public boolean edit2(@RequestBody Score score) {
-        throw new PageTipException("考核已结束,无法评分");
-//        return scoreService.updateById(score);
+//        throw new PageTipException("考核已结束,无法评分");
+        return scoreService.updateById(score);
     }
 
     @GetMapping("getScoreList2")
@@ -236,10 +236,6 @@ public class UserScoreController {
         return scoreService.computeScoreResult11(2021);
     }
 
-    @GetMapping("computeScoreResult2")
-    public boolean computeScoreResult2() {
-        return scoreService.computeScoreResult2(2021);
-    }
 
     @GetMapping("computeScoreResult22")
     public boolean computeScoreResult22() {
