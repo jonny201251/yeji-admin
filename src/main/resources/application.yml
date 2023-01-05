@@ -2,7 +2,6 @@ server:
   port: 8081
   servlet:
     context-path: /yeji
-
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -26,6 +25,10 @@ spring:
       use-global-data-source-stat: true
       filters: stat,wall
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  servlet:
+    multipart:
+      max-request-size: -1
+      max-file-size: -1
 mybatis-plus:
   type-aliases-package: com.haiying.yeji.model.entity
   global-config:

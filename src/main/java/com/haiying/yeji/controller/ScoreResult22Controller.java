@@ -29,9 +29,9 @@ public class ScoreResult22Controller {
     ScoreResult22Service scoreResult22Service;
 
     @GetMapping("list")
-    public IPage<ScoreResult22> list(int current, int pageSize, String userrName, String depttName,
+    public IPage<ScoreResult22> list(int current, int pageSize, String userrName, String depttName, Integer year,
                                      String scoreType, String checkkObject, String good) {
-        LambdaQueryWrapper<ScoreResult22> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<ScoreResult22> wrapper = new LambdaQueryWrapper<ScoreResult22>().eq(ScoreResult22::getYear, year);
         if (ObjectUtil.isNotEmpty(userrName)) {
             wrapper.like(ScoreResult22::getUserrName, userrName);
         }

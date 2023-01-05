@@ -32,7 +32,7 @@ public class CheckStatusController {
 
     @GetMapping("list")
     public IPage<CheckStatus> list(int current, int pageSize) {
-        LambdaQueryWrapper<CheckStatus> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<CheckStatus> wrapper = new LambdaQueryWrapper<CheckStatus>().orderByDesc(CheckStatus::getYear);
         return checkStatusService.page(new Page<>(current, pageSize), wrapper);
     }
 
@@ -40,6 +40,7 @@ public class CheckStatusController {
     @PostMapping("add")
     public boolean add(@RequestBody CheckStatus checkStatus) {
         return checkStatusService.add(checkStatus);
+
     }
 
     @GetMapping("get")

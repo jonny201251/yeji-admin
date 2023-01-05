@@ -20,6 +20,7 @@ import com.haiying.yeji.model.excel.ScoreExcel;
 import com.haiying.yeji.model.excel.ScoreResult22Excel;
 import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.model.vo.ScoreVO;
+import com.haiying.yeji.model.vo.UploadVO;
 import com.haiying.yeji.service.ScoreResult22Service;
 import com.haiying.yeji.service.ScoreService;
 import com.haiying.yeji.service.UploadService;
@@ -33,6 +34,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * <p>
@@ -57,7 +60,11 @@ public class UserScoreController {
 
     @GetMapping("list")
     public IPage<Score> list(int current, int pageSize, String checkkObject, String userrName, String status) {
-        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<>();
+        Integer year = (Integer) httpSession.getAttribute("year");
+        if (year == null) {
+            throw new PageTipException("用户未登录");
+        }
+        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<Score>().eq(Score::getYear, year);
         if (ObjectUtil.isNotEmpty(checkkObject)) {
             wrapper.eq(Score::getCheckkObject, checkkObject);
         }
@@ -73,7 +80,7 @@ public class UserScoreController {
         //
         List<Score> list = page.getRecords();
         if (ObjectUtil.isNotEmpty(list)) {
-            List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
+            List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, year).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
             if (ObjectUtil.isNotEmpty(uploadList)) {
                 Map<String, String> uploadMap = new HashMap<>();
                 for (Upload upload : uploadList) {
@@ -97,18 +104,23 @@ public class UserScoreController {
     @GetMapping("getScoreList")
     public List<Score> getScoreList() {
         List<Score> list;
+        Integer year = (Integer) httpSession.getAttribute("year");
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
-        if (user == null) {
+        if (year == null || user == null) {
             throw new PageTipException("用户未登录");
         }
-        list = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
-        List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, 2021).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
-        Map<String, String> uploadMap = new HashMap<>();
-        for (Upload upload : uploadList) {
-            uploadMap.put(upload.getUserName(), upload.getDiskName());
-        }
-        for (Score score : list) {
-            score.setDiskName(uploadMap.get(score.getUserrName()));
+        list = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getYear, year).eq(Score::getUserName, user.getName()));
+        if (ObjectUtil.isNotEmpty(list)) {
+            List<Upload> uploadList = uploadService.list(new LambdaQueryWrapper<Upload>().eq(Upload::getYear, year).in(Upload::getUserName, list.stream().map(Score::getUserrName).collect(Collectors.toList())));
+            if (ObjectUtil.isNotEmpty(uploadList)) {
+                Map<String, String> uploadMap = new HashMap<>();
+                for (Upload upload : uploadList) {
+                    uploadMap.put(upload.getUserName(), upload.getDiskName());
+                }
+                for (Score score : list) {
+                    score.setDiskName(uploadMap.get(score.getUserrName()));
+                }
+            }
         }
         return list;
     }
@@ -120,13 +132,64 @@ public class UserScoreController {
         return scoreService.updateById(score);
     }
 
-    @GetMapping("getScoreList2")
-    public List<Score> getScoreList2(Integer id, String userrType, String checkkObject) {
+    //导入评分模板
+    @PostMapping("edit3")
+    public boolean edit3(@RequestBody UploadVO uploadVO) throws IOException {
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
         if (user == null) {
             throw new PageTipException("用户未登录");
         }
-        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<>();
+
+        Object obj = httpSession.getAttribute(user.getName() + "ScoreList");
+        List<ScoreExcel> list = (List<ScoreExcel>) obj;
+        Map<Integer, ScoreExcel> map = list.stream().collect(Collectors.toMap(ScoreExcel::getId, a -> a));
+        List<Score> list1 = scoreService.list(new LambdaQueryWrapper<Score>().in(Score::getId, map.keySet()));
+        for (Score score : list1) {
+            double totalScore = 0d;
+            ScoreExcel scoreExcel = map.get(score.getId());
+            score.setScore0(scoreExcel.getScore0());
+            score.setScore1(scoreExcel.getScore1());
+            score.setScore2(scoreExcel.getScore2());
+            score.setScore3(scoreExcel.getScore3());
+            score.setScore4(scoreExcel.getScore4());
+            score.setScore5(scoreExcel.getScore5());
+            score.setScore6(scoreExcel.getScore6());
+            //
+            if (score.getUserrType().equals("一般人员")) {
+                score.setScore3(0d);
+                //0.1, 0.1, 0.1, 0, 0.15, 0.15, 0.4
+                totalScore = ofNullable(score.getScore0()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore1()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore2()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore3()).orElse(0.0) * 0
+                        + ofNullable(score.getScore4()).orElse(0.0) * 0.15
+                        + ofNullable(score.getScore5()).orElse(0.0) * 0.15
+                        + ofNullable(score.getScore6()).orElse(0.0) * 0.4;
+            } else {
+                //0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4
+                totalScore = ofNullable(score.getScore0()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore1()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore2()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore3()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore4()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore5()).orElse(0.0) * 0.1
+                        + ofNullable(score.getScore6()).orElse(0.0) * 0.4;
+            }
+            score.setTotalScore(totalScore);
+            score.setStatus("已评分");
+        }
+        scoreService.updateBatchById(list1);
+        return true;
+    }
+
+    @GetMapping("getScoreList2")
+    public List<Score> getScoreList2(Integer id, String userrType, String checkkObject) {
+        Integer year = (Integer) httpSession.getAttribute("year");
+        CheckUser user = (CheckUser) httpSession.getAttribute("user");
+        if (year == null || user == null) {
+            throw new PageTipException("用户未登录");
+        }
+        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<Score>().eq(Score::getYear, year);
         wrapper.eq(Score::getUserName, user.getName()).eq(Score::getScoreType, "行政评分").ne(Score::getId, id);
         if (userrType.equals("一般人员")) {
             wrapper.eq(Score::getUserrType, userrType);
@@ -166,8 +229,9 @@ public class UserScoreController {
     //下载评分模板
     @GetMapping("download1")
     public void downloadTemplate(HttpServletResponse response) throws IOException {
+        Integer year = (Integer) httpSession.getAttribute("year");
         CheckUser user = (CheckUser) httpSession.getAttribute("user");
-        if (user == null) {
+        if (year == null || user == null) {
             throw new PageTipException("用户未登录");
         }
         response.setContentType("application/vnd.ms-excel");
@@ -178,7 +242,7 @@ public class UserScoreController {
         ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).useDefaultStyle(false).excelType(ExcelTypeEnum.XLS).build();
         //
         List<ScoreExcel> data0List = new ArrayList<>();
-        List<Score> scoreList = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getUserName, user.getName()));
+        List<Score> scoreList = scoreService.list(new LambdaQueryWrapper<Score>().eq(Score::getYear, year).eq(Score::getUserName, user.getName()));
         for (Score score : scoreList) {
             ScoreExcel scoreExcel = new ScoreExcel();
             BeanUtils.copyProperties(score, scoreExcel);
@@ -203,8 +267,8 @@ public class UserScoreController {
         //
         List<ScoreResult22Excel> data0List = new ArrayList<>();
         List<ScoreResult22Excel> data1List = new ArrayList<>();
-        List<ScoreResult22> scoreList0 = scoreResult22Service.list(new QueryWrapper<ScoreResult22>().eq("score_type", "行政评分").orderByAsc("deptt_sort"));
-        List<ScoreResult22> scoreList1 = scoreResult22Service.list(new QueryWrapper<ScoreResult22>().eq("score_type", "党务评分"));
+        List<ScoreResult22> scoreList0 = scoreResult22Service.list(new QueryWrapper<ScoreResult22>().eq("year", 2022).eq("score_type", "行政评分").orderByAsc("deptt_sort"));
+        List<ScoreResult22> scoreList1 = scoreResult22Service.list(new QueryWrapper<ScoreResult22>().eq("year", 2022).eq("score_type", "党务评分"));
         for (ScoreResult22 score : scoreList0) {
             ScoreResult22Excel scoreExcel = new ScoreResult22Excel();
             BeanUtils.copyProperties(score, scoreExcel);
@@ -227,23 +291,23 @@ public class UserScoreController {
     //计算-score_result1
     @GetMapping("computeScoreResult1")
     public boolean computeScoreResult1() {
-        return scoreService.computeScoreResult1(2021);
+        return scoreService.computeScoreResult1(2022);
     }
 
     //计算-score_result11
     @GetMapping("computeScoreResult11")
     public boolean computeScoreResult11() {
-        return scoreService.computeScoreResult11(2021);
+        return scoreService.computeScoreResult11(2022);
     }
 
 
     @GetMapping("computeScoreResult22")
     public boolean computeScoreResult22() {
-        return scoreService.computeScoreResult22(2021);
+        return scoreService.computeScoreResult22(2022);
     }
 
     @GetMapping("computeScoreResult23")
     public boolean computeScoreResult23() {
-        return scoreService.computeScoreResult23(2021);
+        return scoreService.computeScoreResult23(2022);
     }
 }

@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.common.utils.TreeUtil;
+import com.haiying.yeji.model.entity.CheckUser;
 import com.haiying.yeji.model.entity.SysDept;
 import com.haiying.yeji.model.vo.LabelValue;
 import com.haiying.yeji.model.vo.TreeSelect;
+import com.haiying.yeji.service.CheckUserService;
 import com.haiying.yeji.service.SysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,8 @@ import java.util.stream.Stream;
 public class SysDeptController {
     @Autowired
     private SysDeptService sysDeptService;
+    @Autowired
+    CheckUserService checkUserService;
 
     @GetMapping("list")
     public List<SysDept> list() {
@@ -57,7 +61,15 @@ public class SysDeptController {
 
     @PostMapping("edit")
     public boolean edit(@RequestBody SysDept sysDept) {
-        return sysDeptService.edit(sysDept);
+        sysDeptService.edit(sysDept);
+        //人员管理-更新部门
+        List<CheckUser> list = checkUserService.list(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getDeptName, sysDept.getId()));
+        for (CheckUser checkUser : list) {
+            checkUser.setDeptName(sysDept.getName());
+            checkUser.setDeptSort(sysDept.getSort());
+        }
+        checkUserService.updateBatchById(list);
+        return true;
     }
 
     @GetMapping("delete")
@@ -85,7 +97,7 @@ public class SysDeptController {
 
     @GetMapping("getTreeSelect2")
     public List<TreeSelect> getTreeSelect2() {
-        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().notIn(SysDept::getName, Arrays.asList("公司领导", "安全生产总监", "副总师级", "财务副总监","离退休办公室")).orderByAsc(SysDept::getSort));
+        List<SysDept> list = sysDeptService.list(new LambdaQueryWrapper<SysDept>().notIn(SysDept::getName, Arrays.asList("公司领导", "安全生产总监", "副总师级", "财务副总监", "离退休办公室")).orderByAsc(SysDept::getSort));
         return TreeUtil.getTreeSelect(list);
     }
 

@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haiying.yeji.common.exception.PageTipException;
 import com.haiying.yeji.common.result.ResponseResultWrapper;
 import com.haiying.yeji.model.entity.Score;
 import com.haiying.yeji.service.ScoreService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,12 +33,18 @@ import java.util.stream.Stream;
 public class ScoreController {
     @Autowired
     ScoreService scoreService;
+    @Autowired
+    HttpSession httpSession;
 
     @GetMapping("list")
     public IPage<Score> list(int current, int pageSize,
                              Integer depttId, String checkkObject, String userrName, String scoreType,
                              Integer deptId, String checkUserType, String userRole, String userName, String status) {
-        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<>();
+        Integer year = (Integer) httpSession.getAttribute("year");
+        if (year == null) {
+            throw new PageTipException("用户未登录");
+        }
+        LambdaQueryWrapper<Score> wrapper = new LambdaQueryWrapper<Score>().eq(Score::getYear, year);
         if (ObjectUtil.isNotEmpty(depttId)) {
             wrapper.eq(Score::getDepttId, depttId);
         }
@@ -81,7 +89,8 @@ public class ScoreController {
 
     @GetMapping("generate")
     public boolean generate() {
-        scoreService.generate(2021);
+        int year = (int) httpSession.getAttribute("year");
+        scoreService.generate(year);
         return true;
     }
 }

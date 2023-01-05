@@ -205,6 +205,7 @@ public class CheckUserController {
         //
         httpSession.removeAttribute("user");
         httpSession.setAttribute("user", dbUser);
+        httpSession.setAttribute("year", 2022);
         //
         CheckStatus checkStatus = checkStatusService.getOne(new LambdaQueryWrapper<CheckStatus>().eq(CheckStatus::getStatus, "启动"));
         if (checkStatus != null) {
