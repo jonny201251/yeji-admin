@@ -71,6 +71,7 @@ public class SysDeptController {
         checkUserService.updateBatchById(list);
         return true;
     }
+
     @GetMapping("delete")
     public boolean delete(Integer[] arr) {
         List<Integer> idList = Stream.of(arr).collect(Collectors.toList());
