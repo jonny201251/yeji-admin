@@ -233,7 +233,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         this.remove(new LambdaQueryWrapper<Score>().eq(Score::getYear, year));
         //
         List<CheckkObject> checkkObjectList = checkkObjectService.list(new LambdaQueryWrapper<CheckkObject>().orderByAsc(Arrays.asList(CheckkObject::getCheckkObjectSort, CheckkObject::getCheckUserTypeSort)));
-        List<CheckUser> checkUserList = checkUserService.list(new LambdaQueryWrapper<CheckUser>().eq(CheckUser::getWorkStatus, "在岗").orderByAsc(Arrays.asList(CheckUser::getDeptSort, CheckUser::getUserSort)));
+        List<CheckUser> checkUserList = checkUserService.list(new LambdaQueryWrapper<CheckUser>().orderByAsc(Arrays.asList(CheckUser::getDeptSort, CheckUser::getUserSort)));
         List<ChargeDeptLeader> chargeDeptLeaderList = chargeDeptLeaderService.list(new LambdaQueryWrapper<ChargeDeptLeader>().orderByAsc(Arrays.asList(ChargeDeptLeader::getUserSort)));
         List<PartySecretary> partySecretaryList = partySecretaryService.list();
         List<Party> partyList = partyService.list();
